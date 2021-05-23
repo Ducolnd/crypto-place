@@ -2,16 +2,34 @@
 
 <div id="test" class="container">
     <h1>Welcome to the home page!</h1>  
+    <div id="instructions">
+        <ul>
+            <li>Select a color on the right</li>
+            <li>Click to place a pixel</li>
+            <li>Your placed pixels will not be submitted to the blockchain until you cofirm the transaction</li>
+        </ul>
+    </div>
 </div>
 
-<div>
-    Mousepos x <span id="mousex"></span><br>
-    Mousepos y <span id="mousey"></span>
-</div>
+
 {{!-- So we can detect mouse scroll --}}
 <canvas id="cryptoplace" width="128" height="128" >Your browser does not support HTML5 canvas, though you still can place pixels</canvas>
 
-<div id="colors">
-    <h1>Select Color</h1>
-    <p>(Click)</p>
+<div id="infobar">
+    Mousepos: x <span id="mousex"></span> y <span id="mousey"></span>
+
+    <p><b>Buffered Pixels:</b></p>
+    <div id="bufferedPixels">
+
+    </div>
+
+    <button type="button" class="btn btn-success">Submit Pixels</button>
+
+</div>
+
+<div class="container">
+    <div id="colors">
+        <h1>Select Color</h1>
+        <p>(Click)</p>
+    </div>
 </div>

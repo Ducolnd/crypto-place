@@ -12,13 +12,43 @@
     float: left;
 }
 
-#colors {
+#infobar {
     width: 20%;
     float: right;
     text-align: center;
 }
 
+#bufferedPixels {
+    height: 400px;
+    overflow: auto;
+    overflow-x: hidden;
+    width: 60%;
+    margin: auto;    
+}
+
+#colors {
+    width: 100%;
+    float: left;
+    text-align: center;
+}
+
 .colorbox {
-    height: 40px;
-    
+    height: 35px;
+    width: 60px;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.pixelEntry {
+    border-bottom: 1px black solid;
+    cursor: pointer; 
+}
+
+.pixelEntry span {
+    font-size: 23px;
+    margin-right: 10px;
+}
+
+#infobar button {
+    margin: 30px;
 }

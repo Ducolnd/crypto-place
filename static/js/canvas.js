@@ -9,6 +9,10 @@ class Pixel {
     }
 }
 
+// Should be global
+let bufferedPixels = [];
+let currentColor = 0;
+
 $(document).ready(function() {
     // Load canvas
     let canvas = document.getElementById("cryptoplace")
@@ -39,13 +43,10 @@ $(document).ready(function() {
     let MIN_ZOOM = 0.1
     let SCROLL_SENSITIVITY = 0.005
 
-    let buffered_pixels = [];
-    let currentColor = 0;
-
     function draw()
     {
         canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        canvas.height = window.innerHeight - 200;
         cWidth = canvas.width;
         cHeight = canvas.height;
         
@@ -87,12 +88,24 @@ $(document).ready(function() {
     function onPointerDown(e)
     {
         if (e.which == 1) {
-            let start = coordToIndex(mouseimagepos.x, mouseimagepos.y, image)
 
-            imageData.data[start + 0] = 0;
-            imageData.data[start + 1] = 0;
-            imageData.data[start + 2] = 0;
-            imageData.data[start + 3] = 255;
+            if (
+                mouseimagepos.x <= image.width && mouseimagepos.y <= image.height &&
+                mouseimagepos.x >= 0 && mouseimagepos.y >= 0
+            ) { 
+                let start = coordToIndex(mouseimagepos.x, mouseimagepos.y, image)
+    
+                color = colors[currentColor];
+                bufferedPixels.push(new Pixel(mouseimagepos.x, mouseimagepos.y, color))
+    
+                imageData.data[start + 0] = color[0];
+                imageData.data[start + 1] = color[1];
+                imageData.data[start + 2] = color[2];
+                imageData.data[start + 3] = 255;
+    
+                newPixel();
+                
+            }
         }
         isDragging = true
         dragStart.x = getEventLocation(e).x/cameraZoom - cameraOffset.x

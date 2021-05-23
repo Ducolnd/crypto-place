@@ -17,20 +17,34 @@ colors = [
     [0,	40,	89],
 ];
 
+function rgb(color) {
+    return `rgb(${color[0]}, ${color[1]}, ${color[2]})`
+}
+
+function newPixel() {
+    let pixel = bufferedPixels[bufferedPixels.length - 1];
+    let element = $(`<div class="pixelEntry"><span>&#9632</span>(${pixel.x}, ${pixel.y})</div>`);
+
+    element.children("span").css("color", rgb(pixel.color));
+
+    $("#bufferedPixels").append(element);
+}
+
 $(document).ready(function () {
 
     for (var i = 0; i < colors.length; i++) {
         color = colors[i];
 
         let element = $(`<div class='colorbox' id=${i}></div>`)
-        console.log(color[0], color[1], color[2])
         element.css("background-color", `rgb(${color[0]}, ${color[1]}, ${color[2]})`)
         $("#colors").append(element);
 
     }
 
-    $(".colorbox").on("click", function () {
+    $(".colorbox").click(function () {
         $("#colors").children().css("border", "none");
+
+        currentColor = parseInt($(this).attr("id"));
         $(this).css("border", "3px black solid")
     })
 });
