@@ -28,6 +28,8 @@ $(document).ready(function() {
 
     }
 
+    let isDragging = false
+    let dragStart = { x: 0, y: 0 }
     let mouse;
     let acutalmousee;
     let mouseimagepos = {x: 0, y: 0}
@@ -38,7 +40,7 @@ $(document).ready(function() {
     let SCROLL_SENSITIVITY = 0.005
 
     let buffered_pixels = [];
-    // let currentColor = {r: }
+    let currentColor = 0;
 
     function draw()
     {
@@ -81,9 +83,6 @@ $(document).ready(function() {
             return { x: e.clientX, y: e.clientY }        
         }
     }
-
-    let isDragging = false
-    let dragStart = { x: 0, y: 0 }
 
     function onPointerDown(e)
     {

@@ -1,5 +1,5 @@
 #cryptoplace {
-    width: 100%;
+    width: 80%;
     height: 100%;
     image-rendering: -moz-crisp-edges;
     image-rendering: -webkit-crisp-edges;
@@ -8,12 +8,17 @@
 
     background: white;
     border: 2px black solid;
+
+    float: left;
 }
 
-/* #canvasContainer {
-    width: min-content;
-} */
+#colors {
+    width: 20%;
+    float: right;
+    text-align: center;
+}
 
-h1 {
-    background-color: green;
+.colorbox {
+    height: 40px;
+    
 }
