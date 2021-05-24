@@ -46,7 +46,7 @@ $(document).ready(function() {
     function draw()
     {
         canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight - 200;
+        canvas.height = window.innerHeight;
         cWidth = canvas.width;
         cHeight = canvas.height;
         
