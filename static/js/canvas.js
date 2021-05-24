@@ -32,16 +32,17 @@ $(document).ready(function() {
 
     }
 
-    let isDragging = false
-    let dragStart = { x: 0, y: 0 }
+    let isDragging = false;
+    let dragStart = { x: 0, y: 0 };
     let mouse;
     let acutalmousee;
-    let mouseimagepos = {x: 0, y: 0}
-    let cameraOffset = { x: 0, y: 0 }
-    let cameraZoom = 1
-    let MAX_ZOOM = 100
-    let MIN_ZOOM = 0.1
-    let SCROLL_SENSITIVITY = 0.005
+    let mouseimagepos = {x: 0, y: 0};
+    let zoomPoint = {x: 0, y: 0};
+    let cameraOffset = { x: 0, y: 0 };
+    let cameraZoom = 1;
+    let MAX_ZOOM = 100;
+    let MIN_ZOOM = 0.1;
+    let SCROLL_SENSITIVITY = 0.005;
 
     function draw()
     {
@@ -50,23 +51,22 @@ $(document).ready(function() {
         cWidth = canvas.width;
         cHeight = canvas.height;
         
-        ctx.clearRect(0,0, window.innerWidth, window.innerHeight)
-        // Draw image
+        ctx.clearRect(0,0, window.innerWidth, window.innerHeight);
 
         var newCanvas = $("<canvas>")
-        .attr("width", imageData.width)
-        .attr("height", imageData.height)[0];
+            .attr("width", imageData.width)
+            .attr("height", imageData.height)[0]
         newCanvas.getContext("2d").putImageData(imageData, 0, 0);
 
         
         ctx.translate(cameraOffset.x, cameraOffset.y);
+        ctx.translate(zoomPoint.x, zoomPoint.y)
         // ctx.translate( cWidth / 2, cHeight / 2 )
         ctx.scale(cameraZoom, cameraZoom)
-        // ctx.translate( -cWidth / 2 + cameraOffset.x, -cHeight / 2 + cameraOffset.y )
+        ctx.translate( -zoomPoint.x, -zoomPoint.y )
         
 
         ctx.imageSmoothingEnabled = false;
-        // ctx.drawImage(image, 0, 0);
         ctx.drawImage(newCanvas, 0, 0)
             
         requestAnimationFrame( draw )
@@ -124,8 +124,8 @@ $(document).ready(function() {
         mouse = getEventLocation(e);
         acutalmousee = getMousePos(canvas, e);
 
-        mouseimagepos.x = Math.round((acutalmousee.x - cameraOffset.x) / cameraZoom);
-        mouseimagepos.y = Math.round((acutalmousee.y - cameraOffset.y) / cameraZoom);
+        mouseimagepos.x = Math.round((acutalmousee.x - cameraOffset.x) / cameraZoom - (zoomPoint.x / cameraZoom - zoomPoint.x));
+        mouseimagepos.y = Math.round((acutalmousee.y - cameraOffset.y) / cameraZoom - (zoomPoint.y / cameraZoom - zoomPoint.y));
 
         $("#mousex").html(mouseimagepos.x);
         $("#mousey").html(mouseimagepos.y);
@@ -189,8 +189,10 @@ $(document).ready(function() {
             }
             
             cameraZoom = Math.min( cameraZoom, MAX_ZOOM )
-            cameraZoom = Math.max( cameraZoom, MIN_ZOOM )
+            cameraZoom = Math.max( cameraZoom, MIN_ZOOM )      
             
+            zoomPoint.x = mouseimagepos.x;
+            zoomPoint.y = mouseimagepos.y;
         }
     }
 
