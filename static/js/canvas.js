@@ -18,13 +18,12 @@ $(document).ready(function() {
     // load image
     let image = new Image();
     let imageData;
-    image.src = 'images/place.png';
+    image.src = 'images/waves.png';
     image.onload = function () {
         ctx.imageSmoothingEnabled = false;
         ctx.drawImage(image, 0, 0);
 
         imageData = ctx.getImageData(0, 0, image.width, image.height);
-        console.log(image.width, image.height);
         draw()
     }
 
@@ -38,7 +37,7 @@ $(document).ready(function() {
     let cameraZoom = 1;
     let MAX_ZOOM = 100;
     let MIN_ZOOM = 0.1;
-    let SCROLL_SENSITIVITY = 0.005;
+    let SCROLL_SENSITIVITY = 0.15;
     // The part of the canvas that's actually visible
     let visibleSize = {x: 0, y: 0};
 
@@ -55,8 +54,8 @@ $(document).ready(function() {
         ctx.clearRect(0,0, window.innerWidth, window.innerHeight);
 
         var newCanvas = $("<canvas>")
-            .attr("width", imageData.width)
-            .attr("height", imageData.height)[0]
+            .attr("width", image.width)
+            .attr("height", image.height)[0]
         newCanvas.getContext("2d").putImageData(imageData, 0, 0);
         
         ctx.translate(cameraOffset.x, cameraOffset.y);
@@ -144,9 +143,9 @@ $(document).ready(function() {
     {
         if (!isDragging)
         {
-            cameraZoom += zoomAmount
+            cameraZoom *= Math.exp((e.deltaY < 0 ? 1 : -1) * SCROLL_SENSITIVITY);
 
-            // Update mouse
+            // Update on screen stuff
             adjustMouseImagePos(e);
             
             // Keep zoom in bounds
