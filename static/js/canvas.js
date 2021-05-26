@@ -1,13 +1,17 @@
 class Pixel {
-    constructor(x, y, color) {
+    constructor(x, y, color, oldColor) {
         this.x = x;
         this.y = y;
         this.color = color;
+
+        // The pixel it replaces so we can revert it
+        this.oldColor = oldColor;
     }
+
 }
 
 // Should be global
-let bufferedPixels = [];
+let bufferedPixels = {};
 let currentColor = 0;
 
 $(document).ready(function() {
@@ -87,13 +91,19 @@ $(document).ready(function() {
                 let start = coordToIndex(mouseimagepos.x, mouseimagepos.y, image)
     
                 color = colors[currentColor];
-                bufferedPixels.push(new Pixel(mouseimagepos.x, mouseimagepos.y, color))
+
+                // A pixel has already been placed, don't replace oldPixel
+                if (`${mouseimagepos.x}${mouseimagepos.y}` in bufferedPixels) {
+                    bufferedPixels[`${mouseimagepos.x}${mouseimagepos.y}`].color = color
+                } 
+                // No pixel placed yet, oldPixel will be set
+                else {
+                    bufferedPixels[`${mouseimagepos.x}${mouseimagepos.y}`] = (new Pixel(mouseimagepos.x, mouseimagepos.y, color, imageData.data.slice(start, start + 3)))
+                }
+
+                console.log(bufferedPixels)
     
-                imageData.data[start + 0] = color[0];
-                imageData.data[start + 1] = color[1];
-                imageData.data[start + 2] = color[2];
-                imageData.data[start + 3] = 255;
-    
+                setPixelColor(imageData.data, mouseimagepos.x, mouseimagepos.y, color, image);
                 newPixel();               
             }
 
@@ -108,7 +118,6 @@ $(document).ready(function() {
 
     function onPointerUp(e) {
         isDragging = false
-        lastZoom = cameraZoom
     }
 
     // Change on screen coordinate data and MouseImagePos data for calculations
@@ -155,6 +164,15 @@ $(document).ready(function() {
         }
     }
 
+
+    $("#bufferedPixels").on("click", ".pixelentry", function() {
+        let pixel = bufferedPixels[$(this).attr("loc")];
+        setPixelColor(imageData.data, pixel.x, pixel.y, pixel.oldColor, image);
+
+        delete bufferedPixels[$(this).attr("loc")];
+        newPixel();
+    })
+
     canvas.addEventListener('mousedown', onPointerDown)
     canvas.addEventListener('mouseup', onPointerUp)
     canvas.addEventListener('mousemove', onPointerMove)
@@ -171,4 +189,13 @@ function getMousePos(canvas, evt) {
 
 function coordToIndex(x, y, image) {
     return y * (image.width * 4) + x * 4;
+}
+
+function setPixelColor(data, x, y, color, image) {
+    let start = coordToIndex(x, y, image);
+
+    data[start + 0] = color[0];
+    data[start + 1] = color[1];
+    data[start + 2] = color[2];
+    data[start + 3] = 255;
 }

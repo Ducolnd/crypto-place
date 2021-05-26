@@ -22,12 +22,17 @@ function rgb(color) {
 }
 
 function newPixel() {
-    let pixel = bufferedPixels[bufferedPixels.length - 1];
-    let element = $(`<div class="pixelEntry"><span>&#9632</span>(${pixel.x}, ${pixel.y})</div>`);
+    $("#bufferedPixels").empty();
 
-    element.children("span").css("color", rgb(pixel.color));
+    for([key, pixel] of Object.entries(bufferedPixels)) {
+        let element = $(`<div class="pixelentry"><span>&#9632</span>(${pixel.x}, ${pixel.y})</div>`);
+    
+        element.children("span").css("color", rgb(pixel.color));
+        element.attr("loc", `${pixel.x}${pixel.y}`)
+    
+        $("#bufferedPixels").prepend(element);
 
-    $("#bufferedPixels").prepend(element);
+    }
 }
 
 $(document).ready(function () {
@@ -38,7 +43,6 @@ $(document).ready(function () {
         let element = $(`<div class='colorbox' id=${i}></div>`)
         element.css("background-color", `rgb(${color[0]}, ${color[1]}, ${color[2]})`)
         $("#colors").append(element);
-
     }
 
     $(".colorbox").click(function () {

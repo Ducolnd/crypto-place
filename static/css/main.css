@@ -50,12 +50,12 @@
     cursor: pointer;
 }
 
-.pixelEntry {
+.pixelentry {
     border-bottom: 1px black solid;
     cursor: pointer; 
 }
 
-.pixelEntry span {
+.pixelentry span {
     font-size: 23px;
     margin-right: 10px;
 }
