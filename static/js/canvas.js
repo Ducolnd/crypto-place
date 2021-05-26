@@ -18,7 +18,7 @@ $(document).ready(function() {
     // load image
     let image = new Image();
     let imageData;
-    image.src = 'images/waves.png';
+    image.src = 'images/place.png';
     image.onload = function () {
         ctx.imageSmoothingEnabled = false;
         ctx.drawImage(image, 0, 0);
@@ -35,8 +35,8 @@ $(document).ready(function() {
     let zoomPoint = {x: 0, y: 0};
     let cameraOffset = { x: 0, y: 0 };
     let cameraZoom = 1;
-    let MAX_ZOOM = 100;
-    let MIN_ZOOM = 0.1;
+    let MAX_ZOOM = 80;
+    let MIN_ZOOM = 0.6;
     let SCROLL_SENSITIVITY = 0.15;
     // The part of the canvas that's actually visible
     let visibleSize = {x: 0, y: 0};
@@ -123,6 +123,7 @@ $(document).ready(function() {
 
         $("#mousex").html(mouseimagepos.x);
         $("#mousey").html(mouseimagepos.y);
+        $("#zoom").html(cameraZoom.toFixed(2));
     }
 
     function onPointerMove(e)

@@ -27,7 +27,7 @@ function newPixel() {
 
     element.children("span").css("color", rgb(pixel.color));
 
-    $("#bufferedPixels").append(element);
+    $("#bufferedPixels").prepend(element);
 }
 
 $(document).ready(function () {

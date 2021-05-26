@@ -1,13 +1,13 @@
 {{>header}}
 
 <div id="test" class="container">
-    <h1>Welcome to the home page!</h1>  
+    <h1>Welcome to Crypto Place</h1>  
     <div id="instructions">
         <ul>
             <li>You can select a color below</li>
             <li>Click to place a pixel. Your placed pixels are not definite yet</li>
-            <li>The pixels become definite once you submit the transaction by clicking the button</li>
-            <li>You can remove a pixel by selecting it on the right.</li>
+            <li>The pixels become definite once you submit the transaction by clicking the button. You can submit up to 100 pixels per transaction</li>
+            <li>You can remove a pixel by clicking it on the right.</li>
         </ul>
     </div>
 </div>
@@ -15,7 +15,7 @@
 
 <div id="pageMain">
     <div id="cryptoContainer">
-        <canvas id="cryptoplace" width="128" height="128" >Your browser does not support HTML5 canvas, though you still can place pixels</canvas>
+        <canvas id="cryptoplace" width="1024" height="1024" >Your browser does not support HTML5 canvas, though you still can place pixels</canvas>
     </div>
 
     <div id="infobar">
@@ -28,7 +28,7 @@
 
         <p><b>Pixel Info</b></p>
         <div id="pixelInfo">
-            <p>Mousepos: x <span id="mousex"></span> y <span id="mousey"></span></p>
+            <p id="pixelInfoText">Mousepos: x <span id="mousex"></span> y <span id="mousey"></span> Zoom: <span id="zoom"></span></p>
             <p>Pixel placed by: <span id="pixelPlacedBy"></span></p>
             <p>Pixel history</p>
         </div>

@@ -72,6 +72,10 @@
     margin: 0;
 }
 
+#pixelInfoText {
+    font-size: 12px;
+}
+
 #pageMain {
     width: 100%;
     height: 600px;
