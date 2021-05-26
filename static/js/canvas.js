@@ -22,7 +22,7 @@ $(document).ready(function() {
     // load image
     let image = new Image();
     let imageData;
-    image.src = 'images/place.png';
+    image.src = 'images/canvas.png';
     image.onload = function () {
         ctx.imageSmoothingEnabled = false;
         ctx.drawImage(image, 0, 0);
@@ -100,8 +100,6 @@ $(document).ready(function() {
                 else {
                     bufferedPixels[`${mouseimagepos.x}${mouseimagepos.y}`] = (new Pixel(mouseimagepos.x, mouseimagepos.y, color, imageData.data.slice(start, start + 3)))
                 }
-
-                console.log(bufferedPixels)
     
                 setPixelColor(imageData.data, mouseimagepos.x, mouseimagepos.y, color, image);
                 newPixel();               
