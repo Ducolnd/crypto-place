@@ -69,6 +69,9 @@ $(document).ready(function () {
             type: "POST",
             contentType: "application/json",
             data: JSON.stringify(pixelJson),
-        })
+        });
+
+        bufferedPixels = {};
+        newPixel();
     })
 });

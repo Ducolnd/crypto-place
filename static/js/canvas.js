@@ -88,24 +88,25 @@ $(document).ready(function() {
                 mouseimagepos.x <= image.width && mouseimagepos.y <= image.height &&
                 mouseimagepos.x >= 0 && mouseimagepos.y >= 0
             ) { 
-                let start = coordToIndex(mouseimagepos.x, mouseimagepos.y, image)
+                if (Object.keys(bufferedPixels).length <= 100) {
+                    let start = coordToIndex(mouseimagepos.x, mouseimagepos.y, image)
+        
+                    color = colors[currentColor];
     
-                color = colors[currentColor];
-
-                // A pixel has already been placed, don't replace oldPixel
-                if (`${mouseimagepos.x}${mouseimagepos.y}` in bufferedPixels) {
-                    bufferedPixels[`${mouseimagepos.x}${mouseimagepos.y}`].color = color
-                } 
-                // No pixel placed yet, oldPixel will be set
-                else {
-                    bufferedPixels[`${mouseimagepos.x}${mouseimagepos.y}`] = (new Pixel(mouseimagepos.x, mouseimagepos.y, color, imageData.data.slice(start, start + 3)))
+                    // A pixel has already been placed, don't replace oldPixel
+                    if (`${mouseimagepos.x}${mouseimagepos.y}` in bufferedPixels) {
+                        bufferedPixels[`${mouseimagepos.x}${mouseimagepos.y}`].color = color
+                    } 
+                    // No pixel placed yet, oldPixel will be set
+                    else {
+                        bufferedPixels[`${mouseimagepos.x}${mouseimagepos.y}`] = (new Pixel(mouseimagepos.x, mouseimagepos.y, color, imageData.data.slice(start, start + 3)))
+                    }
+        
+                    setPixelColor(imageData.data, mouseimagepos.x, mouseimagepos.y, color, image);
+                    newPixel();               
                 }
-    
-                setPixelColor(imageData.data, mouseimagepos.x, mouseimagepos.y, color, image);
-                newPixel();               
             }
 
-            
         // Middle mouse click
         } else if (e.which = 2) {
             isDragging = true
