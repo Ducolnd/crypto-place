@@ -81,3 +81,13 @@
     height: 600px;
     overflow: hidden;
 }
+
+#colors h1, #colors p {
+    display: inline;
+    vertical-align: top;
+    line-height: 28px;
+}
+
+#colors div {
+    margin: 10px 0 10px 0;
+}
