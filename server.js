@@ -1,5 +1,5 @@
 const express = require("express");
-const sharp = require('sharp');
+const png = require('pngjs').PNG;
 const fs = require('fs');
 
 var exphbs  = require('express-handlebars');
@@ -35,6 +35,32 @@ app.get('/data', (_, res) => {
 });
 
 app.post('/canvas', (req, res) => {
-    console.log(JSON.stringify(req.body, null, 4));
-    res.send("Confirmed");
+    if (req.body.pixels.length > 100) {
+        res.send("ERROR: too many pixels submitted. Max 100");
+        return
+    }
+
+    fs.createReadStream("static/images/canvas.png")
+        .pipe(new png())
+        .on("parsed", function () {
+            for (const pixel of req.body.pixels) {
+                let i = idx(pixel.x, pixel.y, this.width);
+        
+                this.data[i] = pixel.color[0];
+                this.data[i + 1] = pixel.color[1];
+                this.data[i + 2] = pixel.color[2];
+                this.data[i + 3] = 255;
+            }
+        
+            this.pack()
+                .pipe(fs.createWriteStream("static/images/canvas.png"))
+                .on("finish", function () {
+                    res.send("Wrote pixels");
+                    console.log("Wrote pixels");
+                });
+        });
 })
+
+function idx(x, y, width) {
+    return (width * y + x) << 2;
+}

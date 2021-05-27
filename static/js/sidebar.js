@@ -51,4 +51,24 @@ $(document).ready(function () {
         currentColor = parseInt($(this).attr("id"));
         $(this).css("border", "3px black solid")
     })
+
+    $("#submitPixels").click(function () {
+        let pixelJson = {}
+        pixelJson["pixels"] = [];
+
+        for([key, val] of Object.entries(bufferedPixels)) {
+            pixelJson["pixels"].push({
+                "x": val.x,
+                "y": val.y,
+                "color": val.color, 
+            })
+        }
+
+        $.ajax({
+            url: "/canvas",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(pixelJson),
+        })
+    })
 });
