@@ -46,8 +46,7 @@ $(document).ready(function() {
     // The part of the canvas that's actually visible
     let visibleSize = {x: 0, y: 0};
 
-    function draw()
-    {
+    function draw() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         cWidth = canvas.width;
@@ -138,8 +137,7 @@ $(document).ready(function() {
         $("#zoom").html(cameraZoom.toFixed(2));
     }
 
-    function onPointerMove(e)
-    {
+    function onPointerMove(e) {
         mouse = getEventLocation(e);
         adjustMouseImagePos(e);
 
@@ -152,10 +150,8 @@ $(document).ready(function() {
         }
     }
 
-    function adjustZoom(e, zoomAmount)
-    {
-        if (!isDragging)
-        {
+    function adjustZoom(e) {
+        if (!isDragging) {
             cameraZoom *= Math.exp((e.deltaY < 0 ? 1 : -1) * SCROLL_SENSITIVITY);
 
             // Update on screen stuff
@@ -185,7 +181,7 @@ $(document).ready(function() {
     canvas.addEventListener('mousedown', onPointerDown)
     canvas.addEventListener('mouseup', onPointerUp)
     canvas.addEventListener('mousemove', onPointerMove)
-    canvas.addEventListener('wheel', (e) => adjustZoom(e, e.deltaY*SCROLL_SENSITIVITY))
+    canvas.addEventListener('wheel', (e) => adjustZoom(e))
 
     // If mouse is not moved, pixels is deleted
     $("#cryptoplace").on("mousedown", (e) => {
@@ -194,7 +190,6 @@ $(document).ready(function() {
 
             timeout = setTimeout(function () {
                 if (JSON.stringify(bufferedMouseimagepos) === JSON.stringify(mouseimagepos)) {
-                    console.log("Delete");
                     resetPixel(`${bufferedMouseimagepos.x}${bufferedMouseimagepos.y}`);
                 }
             }, 125);
