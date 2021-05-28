@@ -36,6 +36,7 @@ $(document).ready(function() {
     let mouse;
     let acutalmousee;
     let mouseimagepos = {x: 0, y: 0};
+    // let bufferedMouseimagepos = {x: 0, y: 0};
     let zoomPoint = {x: 0, y: 0};
     let cameraOffset = { x: 0, y: 0 };
     let cameraZoom = 1;
@@ -81,6 +82,7 @@ $(document).ready(function() {
     }
 
     function onPointerDown(e) {
+        e.preventDefault();
         // Left click
         if (e.which == 1) {
             // Make sure it's in bounds
@@ -108,10 +110,12 @@ $(document).ready(function() {
             }
 
         // Middle mouse click
-        } else if (e.which = 2) {
+        } else if (e.which == 2) {
             isDragging = true
             dragStart.x = getEventLocation(e).x/cameraZoom - cameraOffset.x
             dragStart.y = getEventLocation(e).y/cameraZoom - cameraOffset.y
+        } else if (e.button == 2) {
+            console.log("right");
         }
     }
 
@@ -123,8 +127,8 @@ $(document).ready(function() {
     function adjustMouseImagePos(e) {
         acutalmousee = getMousePos(canvas, e);
 
-        mouseimagepos.x = Math.round((acutalmousee.x - cameraOffset.x) / cameraZoom - (zoomPoint.x / cameraZoom - zoomPoint.x));
-        mouseimagepos.y = Math.round((acutalmousee.y - cameraOffset.y) / cameraZoom - (zoomPoint.y / cameraZoom - zoomPoint.y));
+        mouseimagepos.x = Math.floor((acutalmousee.x - cameraOffset.x) / cameraZoom - (zoomPoint.x / cameraZoom - zoomPoint.x));
+        mouseimagepos.y = Math.floor((acutalmousee.y - cameraOffset.y) / cameraZoom - (zoomPoint.y / cameraZoom - zoomPoint.y));
 
         zoomPoint.x = Math.round((visibleSize.x / 2 - cameraOffset.x) / cameraZoom - (zoomPoint.x / cameraZoom - zoomPoint.x));
         zoomPoint.y = Math.round((visibleSize.y / 2 - cameraOffset.y) / cameraZoom - (zoomPoint.y / cameraZoom - zoomPoint.y));
@@ -165,17 +169,41 @@ $(document).ready(function() {
 
 
     $("#bufferedPixels").on("click", ".pixelentry", function() {
-        let pixel = bufferedPixels[$(this).attr("loc")];
-        setPixelColor(imageData.data, pixel.x, pixel.y, pixel.oldColor, image);
-
-        delete bufferedPixels[$(this).attr("loc")];
-        newPixel();
+        resetPixel($(this).attr("loc"));
     })
+
+    function resetPixel(inx) {
+        let pixel = bufferedPixels[inx];
+        if (pixel != null) {
+            setPixelColor(imageData.data, pixel.x, pixel.y, pixel.oldColor, image);
+    
+            delete bufferedPixels[inx];
+            newPixel();
+        }
+    }
 
     canvas.addEventListener('mousedown', onPointerDown)
     canvas.addEventListener('mouseup', onPointerUp)
     canvas.addEventListener('mousemove', onPointerMove)
     canvas.addEventListener('wheel', (e) => adjustZoom(e, e.deltaY*SCROLL_SENSITIVITY))
+
+    // If mouse is not moved, pixels is deleted
+    $("#cryptoplace").on("mousedown", (e) => {
+        if (e.button == 1) {
+            const bufferedMouseimagepos = Object.assign({}, mouseimagepos);
+
+            timeout = setTimeout(function () {
+                if (JSON.stringify(bufferedMouseimagepos) === JSON.stringify(mouseimagepos)) {
+                    console.log("Delete");
+                    resetPixel(`${bufferedMouseimagepos.x}${bufferedMouseimagepos.y}`);
+                }
+            }, 125);
+        }
+    }).on("mouseup mouseleave", (e) => {
+        if (e.button == 1) {
+            clearTimeout(timeout);
+        }
+    });
 });
 
 function getMousePos(canvas, evt) {
