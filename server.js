@@ -35,7 +35,7 @@ app.get('/data', (_, res) => {
 });
 
 app.post('/canvas', (req, res) => {
-    if (req.body.pixels.length > 100) {
+    if (req.body.pixels.length >= 100) {
         res.send("ERROR: too many pixels submitted. Max 100");
         return
     }
