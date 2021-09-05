@@ -1,41 +1,68 @@
 require('dotenv').config();
 const axios = require('axios');
-const walletId = process.env.WALLET_ID;
 
 function transaction() {
-    axios.post(`http://localhost:8090/v2/wallets/${walletId}/transactions`, {
-        "passphrase":"test123456",
+    data = {
+        "passphrase":process.env.WALLET_PASSPHRASE,
         "payments":[
             {
-                "address":"addr_test1qqm725nm5f7jn48jmu5ss0n9j5e6qwfvvq0mwwklhyxq6jyszazdtcyrdzhqus0l9p2vqe2svkm0r7p699g5wnyrl5jsqk78a7",
+                "address":"addr_test1qrpgm3calx3hhjnp244wqvx6d5tadzrw4z0t608jay9xgepm0uqgsmeay4puv9yjcvzwslyswff9wtd85h26vrwmapzq8raqag",
                 "amount":{
-                    "quantity":1587954,
+                    "quantity":999979,
                     "unit":"lovelace"
                 }
             }
         ],
-        "metadata":{
-            "42":{
-                "map":[
+        "metadata": {
+            "0": {
+                "list": [
                     {
-                        "k":{
-                            "string":"Duco"
-                        },
-                        "v":{
-                            "string":"Second Metadata! 01-09-2021"
-                        }
+                        "int": 3, // r
+                    },
+                    {
+                        "int": 12, // g
+                    },
+                    {
+                        "int": 255, // b
+                    },
+                    {
+                        "int": 1001, // x
+                    },
+                    {
+                        "int": -1, // y
+                    },
+                ]
+            },
+            "1": {
+                "list": [
+                    {
+                        "int": 2,
+                    },
+                    {
+                        "int": 4,
+                    },
+                    {
+                        "int": 534,
+                    },
+                    {
+                        "int": 204,
+                    },
+                    {
+                        "int": 24,
                     },
                 ]
             }
         }
-    }).then(res => {
+    }
+
+    axios.post(`http://localhost:8090/v2/wallets/${process.env.WALLET_ID_SEND}/transactions`, data, {'Content-Type': 'application/json'}).then(res => {
         console.log('Status Code:', res.status);
     
         console.log(res.data)
     })
     
     .catch(err => {
-        console.log('Error: ', err.message);
+        console.log('Error: ', err.message, err);
     })
 }
 
