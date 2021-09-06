@@ -1,10 +1,35 @@
 /// Continiously querys blockchain for new transactions with metadata to update the pixelgrid
 
 require('dotenv').config();
+const png = require('pngjs').PNG;
+const fs = require('fs');
 const axios = require('axios');
 const walletId = process.env.WALLET_ID_REC;
 
 let transactionPixelHistory = {}
+
+function updateCanvas() {
+    fs.createReadStream("static/images/canvas.png")
+        .pipe(new png())
+        .on("parsed", function () {
+            for (const pixel of Object.values(transactionPixelHistory)) {
+                let i = idx(pixel.x, pixel.y, this.width);
+        
+                this.data[i] = pixel.r;
+                this.data[i + 1] = pixel.g;
+                this.data[i + 2] = pixel.b;
+                this.data[i + 3] = 255;
+            }
+
+    });
+
+    transactionPixelHistory = {};
+    console.log("Wrote Pixels");
+}
+
+function idx(x, y, width) {
+    return (width * y + x) << 2;
+}
 
 function checkTransactions(query_hours=24) {
     let date = new Date((new Date() - query_hours * 60 * 60 * 1000)).toISOString();
@@ -13,7 +38,6 @@ function checkTransactions(query_hours=24) {
         console.log('Status Code:', res.status);
     
         for (transaction of res.data) {
-            console.log(transaction);
             let metadata = transaction.metadata;
             let amount = transaction.amount.quantity;
             let direction = transaction.direction == "incoming" ? true : false;
@@ -37,10 +61,11 @@ function checkTransactions(query_hours=24) {
                     ) {
                         console.log("Metadata pixel values are invalid for transaction: ", transaction.id);
                     } else {
-                        // transactionPixelHistory[]
+                        transactionPixelHistory[transaction.inserted_at.time] = {r, g, b, x, y}
+                        console.log(transactionPixelHistory);
                     }
 
-                    console.log(r, g, b, x, y);
+                    // console.log(r, g, b, x, y);
                     
                 }
             }
@@ -53,4 +78,5 @@ function checkTransactions(query_hours=24) {
     })
 }
 
-checkTransactions(3);
+checkTransactions(24);
+updateCanvas();
