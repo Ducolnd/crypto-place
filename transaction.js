@@ -4,16 +4,16 @@ const util = require('util')
 
 function transaction(pixels) {
     metadata = {};
-    i = 0;
+    pixelIndex = 0;
     for (const pixel of pixels) {
-        metadata[i] = {"list": [
+        metadata[pixelIndex] = {"list": [
             {"int": pixel.color[0]},
             {"int": pixel.color[1]},
             {"int": pixel.color[2]},
             {"int": pixel.x},
             {"int": pixel.y},
         ]};
-        i++;
+        pixelIndex++;
     }
 
     console.log(util.inspect(metadata, {showHidden: false, depth: null}));
@@ -24,7 +24,7 @@ function transaction(pixels) {
             {
                 "address":"addr_test1qrpgm3calx3hhjnp244wqvx6d5tadzrw4z0t608jay9xgepm0uqgsmeay4puv9yjcvzwslyswff9wtd85h26vrwmapzq8raqag",
                 "amount":{
-                    "quantity":1548999,
+                    "quantity": parseInt(1000000 + (pixelIndex * 0.1) * 1000000),
                     "unit":"lovelace"
                 }
             }
