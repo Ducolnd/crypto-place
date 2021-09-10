@@ -34,7 +34,6 @@ function newPixel() {
         $("#bufferedPixels").prepend(element);
     }
     let numPixels = Object.keys(bufferedPixels).length;
-    console.log(numPixels);
     $("#pixelCounter").html(numPixels >= 4 ? `${numPixels} - too many` : numPixels)
 }
 
