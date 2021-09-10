@@ -21,18 +21,21 @@ function rgb(color) {
     return `rgb(${color[0]}, ${color[1]}, ${color[2]})`
 }
 
+//  Add pixel to the sidebar
 function newPixel() {
     $("#bufferedPixels").empty();
 
     for([key, pixel] of Object.entries(bufferedPixels)) {
         let element = $(`<div class="pixelentry"><span>&#9632</span>(${pixel.x}, ${pixel.y})</div>`);
-    
+        
         element.children("span").css("color", rgb(pixel.color));
         element.attr("loc", `${pixel.x}${pixel.y}`)
-    
+        
         $("#bufferedPixels").prepend(element);
-
     }
+    let numPixels = Object.keys(bufferedPixels).length;
+    console.log(numPixels);
+    $("#pixelCounter").html(numPixels >= 4 ? `${numPixels} - too many` : numPixels)
 }
 
 $(document).ready(function () {
@@ -45,6 +48,7 @@ $(document).ready(function () {
         $("#colors").append(element);
     }
 
+    // When a color is selected
     $(".colorbox").click(function () {
         $("#colors").children().css("border", "none");
 
@@ -52,9 +56,16 @@ $(document).ready(function () {
         $(this).css("border", "3px black solid")
     })
 
+    // When pixels are submitted via button
     $("#submitPixels").click(function () {
         let pixelJson = {}
         pixelJson["pixels"] = [];
+
+        // Perform a couple of checks
+        let numPixels = Object.keys(bufferedPixels).length
+        if (numPixels == 0 || numPixels >= 100) {
+            return;
+        }
 
         for([key, val] of Object.entries(bufferedPixels)) {
             pixelJson["pixels"].push({
