@@ -1,9 +1,10 @@
 const path = require('path');
 
 module.exports = {
-    entry: './static/js/webpack/main.js',
+    entry: {
+        canvas: "./static/js/sidebar.js",
+    },
     output: {
-        filename: 'main.js',
         path: path.resolve(__dirname, "static", 'dist'),
     },
     mode: "development",

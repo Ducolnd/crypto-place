@@ -1,31 +1,17 @@
-colors = [
-    [22,	23,	26],
-    [127,	6,	34],
-    [214,	36,	17],
-    [255,	132, 38],
-    [255,	209, 0],
-    [250,	253, 255],
-    [255,	128, 164],
-    [255,	38,	116],
-    [148,	33,	106],
-    [67,	0,	103,],
-    [35,	73,	117,],
-    [104,	174,	212],
-    [191,	255,	60],
-    [16,	210,	117],
-    [0,	120,	153],
-    [0,	40,	89],
-];
+import {sendPixels, activateCardano} from "./wallet";
+import { Canvas, colors } from "./canvas";
+
 
 function rgb(color) {
     return `rgb(${color[0]}, ${color[1]}, ${color[2]})`
 }
 
 //  Add pixel to the sidebar
-function newPixel() {
+export function newPixel(bufferedPixels) {
     $("#bufferedPixels").empty();
+    console.log(bufferedPixels);
 
-    for([key, pixel] of Object.entries(bufferedPixels)) {
+    for(let [_, pixel] of Object.entries(bufferedPixels)) {
         let element = $(`<div class="pixelentry"><span>&#9632</span>(${pixel.x}, ${pixel.y})</div>`);
         
         element.children("span").css("color", rgb(pixel.color));
@@ -39,9 +25,18 @@ function newPixel() {
 
 $(document).ready(function () {
 
+    let canvas = new Canvas();
+    canvas.init();
+
+    // Activate Cardano
+    activateCardano();
+    $("#connectBtn").click(function() {
+        activateCardano();
+    });
+
     // Draw 'select color' 
     for (var i = 0; i < colors.length; i++) {
-        color = colors[i];
+        let color = colors[i];
 
         let element = $(`<div class='colorbox' id=${i}></div>`)
         element.css("background-color", `rgb(${color[0]}, ${color[1]}, ${color[2]})`)
@@ -52,33 +47,34 @@ $(document).ready(function () {
     $(".colorbox").click(function () {
         $("#colors").children().css("border", "none");
 
-        currentColor = parseInt($(this).attr("id"));
+        window.currentColor = parseInt($(this).attr("id"));
         $(this).css("border", "3px black solid")
     })
 
     // When pixels are submitted via button
     $("#submitPixels").click(function () {
-        let pixelJson = {}
-        pixelJson["pixels"] = [];
+        console.log("submitted pixels")
+        let pixels = [];
 
         // Perform a couple of checks
-        let numPixels = Object.keys(bufferedPixels).length
+        let numPixels = Object.keys(canvas.bufferedPixels).length
         if (numPixels == 0 || numPixels >= 100) {
             return;
         }
 
         // Format correctly
-        for([key, val] of Object.entries(bufferedPixels)) {
-            pixelJson["pixels"].push({
-                "x": val.x,
-                "y": val.y,
+        for([key, val] of Object.entries(canvas.bufferedPixels)) {
+            pixels.push({
+                "xy": [val.x, val.y],
                 "color": val.color, 
             })
         }
 
-        console.log(pixelJson);
+        console.log(pixels);
+        // Construct the transaction with the pixels
+        sendPixels(pixels);
 
-        bufferedPixels = {};
-        newPixel();
+        // Update sidebar
+        newPixel({});
     })
 });

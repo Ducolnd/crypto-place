@@ -4,7 +4,8 @@
   "description": "A 1024x1024 grid of pixels powered by the Cardano Blockchain!",
   "main": "server.js",
   "scripts": {
-    "start": "npx nodemon server.js"
+    "start": "npx nodemon server.js",
+    "build": "webpack"
   },
   "author": "Duco Lindhout",
   "license": "ISC",

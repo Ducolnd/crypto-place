@@ -1,28 +1,34 @@
-$(document).ready(function() {
-    activateCardano();
-    $("#connectBtn").click(function() {
-        activateCardano();
-    })
-});
+const wasm = await import("@emurgo/cardano-serialization-lib-browser/cardano_serialization_lib.js");
+const nami_lib = await import("nami-wallet-api");
+const cardano = window.cardano;
 
-async function getBalance() {
-    cardano.getUsedAddresses().then(function(result) {
-        console.log(cbor.decode(result))
+const wallet = await nami_lib.NamiWalletApi(
+    cardano,
+    "testnetAIiYXMPjRJDZqahVQ237yoe12zra8XAx",
+    wasm,
+)
+
+// Send pixels to the 'server' aka cardano wallet.
+export function sendPixels(pixels) {
+    console.log("Creating the transaction", pixels);
+    
+    wallet.send({
+        address: "addr_test1qqm725nm5f7jn48jmu5ss0n9j5e6qwfvvq0mwwklhyxq6jyszazdtcyrdzhqus0l9p2vqe2svkm0r7p699g5wnyrl5jsqk78a7",
+        amount: 8.04,
+        metadata: {
+            pixels: pixels,
+        }
+    }).then(hash => {
+        console.log("Transaction was succesful. Transaction hash: ", hash);
     })
 }
 
-async function activateCardano() {
-    try {
-        const promise = await cardano.enable()
-        if (cardano.isEnabled()) {
-            $("#connectBtn").text('Connected');
-            $("#connectBtn").attr('class', 'btn btn-success');
-        } else {
-            $("#connectBtn").text('Click to connect');
-            $("#connectBtn").attr('class', 'btn btn-dark');
-        }
-    } catch (error) {
-        $("#connectBtn").text('Install Nami Wallet');
-        $("#connectBtn").attr('class', 'btn btn-danger');
-    }
+export async function activateCardano() {
+    wallet.enable().then(result => {
+        $("#connectBtn").text('Connected');
+        $("#connectBtn").attr('class', 'btn btn-success');
+    }, 
+    error => {
+        alert("could not connect", error);
+    })
 }
