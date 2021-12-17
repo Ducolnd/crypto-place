@@ -3,6 +3,11 @@ const axios = require('axios');
 const util = require('util')
 
 function transaction(pixels) {
+
+    if (!(Object.keys(pixels).length > 0)) {
+        return
+    }
+    
     metadata = {};
     pixelIndex = 0;
     for (const pixel of pixels) {

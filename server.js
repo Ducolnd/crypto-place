@@ -32,6 +32,10 @@ app.get('/data', (_, res) => {
     res.render("data");
 });
 
+app.get('/wallet', (_, res) => {
+    res.render("wallet");
+});
+
 app.post("/canvas", (req, res) => {
     console.log("Creating transaction");
     transaction(req.body.pixels);
