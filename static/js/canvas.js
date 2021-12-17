@@ -106,7 +106,7 @@ export class Canvas {
 
     onPointerDown(e) {
         e.preventDefault();
-        
+
         // Left click
         if (e.which == 1) {
             // Make sure it's in bounds
@@ -114,11 +114,10 @@ export class Canvas {
                 this.mouseimagepos.x <= this.image.width && this.mouseimagepos.y <= this.image.height &&
                 this.mouseimagepos.x >= 0 && this.mouseimagepos.y >= 0
             ) {
-                console.log("in bounds");
                 if (Object.keys(this.bufferedPixels).length <= 100) {
                     let start = coordToIndex(this.mouseimagepos.x, this.mouseimagepos.y, this.image)
 
-                    color = colors[window.currentColor];
+                    let color = colors[window.currentColor];
 
                     // A pixel has already been placed, don't replace oldPixel
                     if (`${this.mouseimagepos.x}${this.mouseimagepos.y}` in this.bufferedPixels) {
@@ -154,7 +153,7 @@ export class Canvas {
     adjustMouseImagePos(e) {
         this.acutalmousee = getMousePos(this.canvas, e);
 
-        this.mouseimagepos.x = Math.floor((this.acutalmousee.x - this.cameraOffset.x) / this.cameraZoom - (this.zoomPoint.x / this.ameraZoom - this.zoomPoint.x));
+        this.mouseimagepos.x = Math.floor((this.acutalmousee.x - this.cameraOffset.x) / this.cameraZoom - (this.zoomPoint.x / this.cameraZoom - this.zoomPoint.x));
         this.mouseimagepos.y = Math.floor((this.acutalmousee.y - this.cameraOffset.y) / this.cameraZoom - (this.zoomPoint.y / this.cameraZoom - this.zoomPoint.y));
 
         this.zoomPoint.x = Math.round((this.visibleSize.x / 2 - this.cameraOffset.x) / this.cameraZoom - (this.zoomPoint.x / this.cameraZoom - this.zoomPoint.x));

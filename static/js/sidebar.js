@@ -63,7 +63,7 @@ $(document).ready(function () {
         }
 
         // Format correctly
-        for([key, val] of Object.entries(canvas.bufferedPixels)) {
+        for(let [_, val] of Object.entries(canvas.bufferedPixels)) {
             pixels.push({
                 "xy": [val.x, val.y],
                 "color": val.color, 
