@@ -11,16 +11,20 @@ function updateCanvas(withPixels) {
     fs.createReadStream("static/images/canvas.png")
         .pipe(new png())
         .on("parsed", function () {
-            for (const pixel of Object.values(withPixels)[0]) {
-                let i = idx(pixel.x, pixel.y, this.width);
-        
-                this.data[i] = pixel.r;
-                this.data[i + 1] = pixel.g;
-                this.data[i + 2] = pixel.b;
-                this.data[i + 3] = 255;
-
+            try {
+                for (const pixel of Object.values(withPixels)[0]) {
+                    let i = idx(pixel.x, pixel.y, this.width);
+            
+                    this.data[i] = pixel.r;
+                    this.data[i + 1] = pixel.g;
+                    this.data[i + 2] = pixel.b;
+                    this.data[i + 3] = 255;
+    
+                }
+            } catch (error) {
+                console.error("No valid transactions were given");
             }
-
+            
         this.pack()
             .pipe(fs.createWriteStream("static/images/canvas.png"))
             .on("finish", function () {

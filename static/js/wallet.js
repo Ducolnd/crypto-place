@@ -3,8 +3,6 @@ $(document).ready(function() {
     $("#connectBtn").click(function() {
         activateCardano();
     })
-
-    console.log("Wer are here")
 });
 
 async function getBalance() {
