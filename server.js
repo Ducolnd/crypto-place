@@ -1,5 +1,4 @@
 const express = require("express");
-const transaction = require("./transaction.js").transaction;
 var exphbs  = require('express-handlebars');
 
 const app = express()
@@ -39,9 +38,3 @@ app.get('/data', (_, res) => {
 app.get('/wallet', (_, res) => {
     res.render("wallet");
 });
-
-app.post("/canvas", (req, res) => {
-    console.log("Creating transaction");
-    transaction(req.body.pixels);
-    console.log("Sent transaction");
-})

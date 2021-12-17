@@ -34,11 +34,12 @@ function newPixel() {
         $("#bufferedPixels").prepend(element);
     }
     let numPixels = Object.keys(bufferedPixels).length;
-    $("#pixelCounter").html(numPixels >= 4 ? `${numPixels} - too many` : numPixels)
+    $("#pixelCounter").html(numPixels > 10 ? `${numPixels} - too many` : numPixels)
 }
 
 $(document).ready(function () {
 
+    // Draw 'select color' 
     for (var i = 0; i < colors.length; i++) {
         color = colors[i];
 
@@ -66,6 +67,7 @@ $(document).ready(function () {
             return;
         }
 
+        // Format correctly
         for([key, val] of Object.entries(bufferedPixels)) {
             pixelJson["pixels"].push({
                 "x": val.x,
@@ -74,12 +76,7 @@ $(document).ready(function () {
             })
         }
 
-        $.ajax({
-            url: "/canvas",
-            type: "POST",
-            contentType: "application/json",
-            data: JSON.stringify(pixelJson),
-        });
+        console.log(pixelJson);
 
         bufferedPixels = {};
         newPixel();

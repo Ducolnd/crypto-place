@@ -11,23 +11,19 @@ const wallet = await nami_lib.NamiWalletApi(
     wasm,
 )
 
-function send(to, amount) {
-    const lovelace = (parseFloat(amount) * 1000000).toString();
+// Send pixels to the 'server' aka cardano wallet.
+function sendPixels(pixels) {
+    wallet.send({
+        address: "addr_test1qqm725nm5f7jn48jmu5ss0n9j5e6qwfvvq0mwwklhyxq6jyszazdtcyrdzhqus0l9p2vqe2svkm0r7p699g5wnyrl5jsqk78a7",
+        amount: 8.04,
+        metadata: {
+            pixels: pixels,
+        }
+    }).then(hash => {
+        console.log("Transaction was succesful. Transaction hash: ", hash);
+    })
 }
 
 $(document).ready(function() {
-    cardano.enable().then((result) => {
-        console.log("Connected: ", result);
-        console.log("Address:", wallet.getAddress());
-        
-        wallet.send({
-            address: "addr_test1qqm725nm5f7jn48jmu5ss0n9j5e6qwfvvq0mwwklhyxq6jyszazdtcyrdzhqus0l9p2vqe2svkm0r7p699g5wnyrl5jsqk78a7",
-            amount: 8.04,
-            metadata: {
-                "Somedata": "Duco Lindhout (:",
-            }
-        }).then((hash) => {
-            console.log("HASH: ", hash);
-        })
-    })
+    
 })
