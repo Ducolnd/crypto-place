@@ -9,7 +9,6 @@ function rgb(color) {
 //  Add pixel to the sidebar
 export function newPixel(bufferedPixels) {
     $("#bufferedPixels").empty();
-    console.log(bufferedPixels);
 
     for(let [_, pixel] of Object.entries(bufferedPixels)) {
         let element = $(`<div class="pixelentry"><span>&#9632</span>(${pixel.x}, ${pixel.y})</div>`);
@@ -53,7 +52,6 @@ $(document).ready(function () {
 
     // When pixels are submitted via button
     $("#submitPixels").click(function () {
-        console.log("submitted pixels")
         let pixels = [];
 
         // Perform a couple of checks

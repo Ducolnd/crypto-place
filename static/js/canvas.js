@@ -55,7 +55,6 @@ export class Canvas {
 
         this.canvas = document.getElementById("cryptoplace");
         this.ctx = this.canvas.getContext('2d');
-        console.log(this.canvas.width, "this", this);
     }
 
     init() {
@@ -128,8 +127,6 @@ export class Canvas {
                         this.bufferedPixels[`${this.mouseimagepos.x}${this.mouseimagepos.y}`] = (new Pixel(this.mouseimagepos.x, this.mouseimagepos.y, color, this.imageData.data.slice(start, start + 3)))
                     }
 
-                    console.log("setpixelcolor", color);
-
                     setPixelColor(this.imageData.data, this.mouseimagepos.x, this.mouseimagepos.y, color, this.image);
                     newPixel(this.bufferedPixels);
                 }
@@ -141,7 +138,7 @@ export class Canvas {
             this.dragStart.x = getEventLocation(e).x / this.cameraZoom - this.cameraOffset.x
             this.dragStart.y = getEventLocation(e).y / this.cameraZoom - this.cameraOffset.y
         } else if (e.button == 2) {
-            console.log("right");
+            // Right Click
         }
     }
 
