@@ -1,17 +1,30 @@
 import _ from 'lodash';
 import {log} from "./module-test";
 
-function component() {
-    const element = document.createElement('div');
+const wasm = await import("@emurgo/cardano-serialization-lib-browser/cardano_serialization_lib.js");
+const nami_lib = await import("nami-wallet-api");
+const cardano = window.cardano;
 
-    // Lodash, currently included via a script, is required for this line to work
-    // Lodash, now imported by this script
+const wallet = await nami_lib.NamiWalletApi(
+    cardano,
+    "testnetAIiYXMPjRJDZqahVQ237yoe12zra8XAx",
+    wasm,
+)
 
-    element.innerHTML = _.join(['Hello', 'webpack', a], ' ');
-
-    return element;
+function send(to, amount) {
+    const lovelace = (parseFloat(amount) * 1000000).toString();
 }
 
-log("He!!");
-
-document.body.appendChild(component());
+$(document).ready(function() {
+    cardano.enable().then((result) => {
+        console.log("Connected: ", result);
+        console.log("Address:", wallet.getAddress());
+        
+        wallet.send({
+            address: "addr_test1qqm725nm5f7jn48jmu5ss0n9j5e6qwfvvq0mwwklhyxq6jyszazdtcyrdzhqus0l9p2vqe2svkm0r7p699g5wnyrl5jsqk78a7",
+            amount: 8.04,
+        }).then((hash) => {
+            console.log("HASH: ", hash);
+        })
+    })
+})
