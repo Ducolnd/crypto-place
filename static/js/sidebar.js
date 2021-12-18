@@ -62,13 +62,13 @@ $(document).ready(function () {
 
         // Format correctly
         for(let [_, val] of Object.entries(canvas.bufferedPixels)) {
-            pixels.push({
-                "x": val.x,
-                "y": val.y,
-                "r": val.color[0],
-                "g": val.color[1],
-                "b": val.color[2],
-            })
+            pixels.push([
+                val.x,
+                val.y,
+                val.color[0],
+                val.color[1],
+                val.color[2],
+            ])
         }
 
         console.log(pixels);

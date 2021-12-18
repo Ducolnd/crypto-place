@@ -12,13 +12,10 @@ function updateCanvas(withPixels) {
         .pipe(new png())
         .on("parsed", function () {
             try {
-                console.log(withPixels);
                 for (const pixelGroup of withPixels) {
                     for (const pixel of pixelGroup) {
                         let i = idx(pixel.x, pixel.y, this.width);
-    
-                        console.log("Wrinting pixels x, y, r, g, b, i", pixel.x, pixel.y, pixel.r, pixel.g, pixel.b, i);
-    
+
                         this.data[i] = pixel.r;
                         this.data[i + 1] = pixel.g;
                         this.data[i + 2] = pixel.b;
@@ -27,7 +24,6 @@ function updateCanvas(withPixels) {
                 }
             } catch (error) {
                 console.error("No valid transactions were given, error: ", error);
-                return
             }
 
             this.pack()
@@ -35,7 +31,6 @@ function updateCanvas(withPixels) {
                 .on("finish", function () {
                     console.log("Wrote pixels");
                 });
-
         });
 }
 
@@ -45,19 +40,24 @@ function idx(x, y, width) {
 }
 
 function checkTransactions(query_hours = 24, callback) {
-    let date = new Date((new Date() - 60 * 5 * 1000)).toISOString(); // From when we want to query transactions
-    let transactionPixelHistory = []
+    let date = new Date((new Date() - query_hours * 60 * 60 * 1000)).toISOString(); // From when we want to query transactions
+    let transactionPixelHistory = [];
 
-    axios.get(`http://localhost:8090/v2/wallets/${walletId}/transactions?from=${date}`).then(res => {
-        console.log('Status Code:', res.status);
-
-        for (let i = 0; i < res.data.slice(0, 2).length; i++) {
+    axios.get(`http://localhost:8090/v2/wallets/${walletId}/transactions?start=${date}`).then(res => {
+        for (let i = 0; i < res.data.length; i++) {
             let transaction = res.data[i];
 
             // Make sure it is meant for us
             if (transaction.metadata !== null && transaction.direction === "incoming") {
                 let amount = parseFloat(transaction.amount.quantity) / 1000000.0;
                 let pixels = parseMetaData(transaction.metadata);
+
+                console.log(pixels);
+
+                // The metadata was not in the correct format
+                if (pixels === null) {
+                    continue;
+                }
 
                 // No enough funds
                 if (pixels.length * 0.1 > amount) {
@@ -85,13 +85,23 @@ checkTransactions(48, data => {
 function parseMetaData(metadata) {
     let data = [];
 
-    for (let pixel of Object.values(metadata)[0].map[0].v.list) {
-        let d = {};
-        for (let raw of pixel.map) {
-            d[raw.k.string] = raw.v.int
-        }
-        data.push(d);
-    }
+    try {
+        for (let pixel of metadata["721"].map[0].v.list) {
+            let d = {};
+            let raw = pixel.list;
 
-    return data
+            d["x"] = raw[0].int;
+            d["y"] = raw[1].int;
+            d["r"] = raw[2].int;
+            d["g"] = raw[3].int;
+            d["b"] = raw[4].int;
+
+            data.push(d);
+        }
+
+        return data
+    }
+    catch (e) {
+        return null
+    }
 }
