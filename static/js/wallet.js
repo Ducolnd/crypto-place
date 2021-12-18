@@ -9,16 +9,13 @@ const wallet = await nami_lib.NamiWalletApi(
 )
 
 // Send pixels to the 'server' aka cardano wallet.
-export function sendPixels(pixels) {   
-    wallet.send({
+export async function sendPixels(pixels) {   
+    return wallet.send({
         address: "addr_test1qze28nytrunhtfe0xth687n9933yj6mc0glph7yetcgvuwc2xf3hclyd5syrcg66wa205037ma6vkghzmjd0l0rl649qdzva7e",
         amount: pixels.length * 0.1,
         metadata: {
-            // lol: "hey",
             pixels: pixels,
         }
-    }).then(hash => {
-        console.log("Transaction was succesful. Transaction hash: ", hash);
     })
 }
 

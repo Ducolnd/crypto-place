@@ -73,7 +73,15 @@ $(document).ready(function () {
 
         console.log(pixels);
         // Construct the transaction with the pixels
-        sendPixels(pixels);
+        sendPixels(pixels).then(
+            hash => {
+                console.log("Transaction was successful: hash", hash);
+                $("#hash-success").html(`<p>Success. Transation hash: <a target="_blank" href=${'https://explorer.cardano-testnet.iohkdev.io/en/transaction?id=' + hash}>${hash}</a></p>`);
+            },
+            failure => {
+                $("#hash-success").html(`<p>Failure</p>`);
+            }
+        );
 
         // Update sidebar
         newPixel({});
