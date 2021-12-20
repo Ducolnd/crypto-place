@@ -3,7 +3,6 @@ const path = require('path');
 module.exports = {
     entry: {
         canvas: "./static/js/sidebar.js",
-        react: "./static/js/react.js",
     },
     output: {
         path: path.resolve(__dirname, "static", 'dist'),

@@ -1,5 +1,8 @@
 import {sendPixels, activateCardano} from "./wallet";
-import { Canvas, colors } from "./canvas";
+import { App, colors, init } from "./canvas";
+
+// import React from "react";
+// import { render } from 'react-dom';
 
 
 function rgb(color) {
@@ -24,8 +27,10 @@ export function newPixel(bufferedPixels) {
 
 $(document).ready(function () {
 
-    let canvas = new Canvas();
-    canvas.init();
+    // let canvas = new Canvas();
+    // canvas.init();
+
+    init();
 
     // Activate Cardano
     activateCardano();
