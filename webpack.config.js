@@ -8,6 +8,7 @@ module.exports = {
         path: path.resolve(__dirname, "static", 'dist'),
     },
     mode: "development",
+    devtool: "source-map",
 
     experiments: {
         asyncWebAssembly: true,

@@ -1,4 +1,5 @@
 import { newPixel } from "./sidebar";
+import Konva from "konva";
 
 export let colors = [
     [22, 23, 26],
@@ -50,11 +51,22 @@ export class Canvas {
     image;
     imageData;
 
-    constructor() {
-        console.log("Creating canvas");
+    stage;
+    layer;
 
-        this.canvas = document.getElementById("cryptoplace");
-        this.ctx = this.canvas.getContext('2d');
+    constructor() {
+        let stage = new Konva.Stage({
+            container: "place",
+            width: 1024,
+            height: 1024,
+            draggable: true,
+        });
+
+        let layer = new Konva.Layer();
+        stage.add(layer);
+
+        this.layer = layer;
+        this.stage = stage;
     }
 
     init() {
@@ -63,16 +75,27 @@ export class Canvas {
 
         this.image = new Image();
         this.imageData;
-        this.image.src = 'images/canvas.png';
-        this.image.onload = () => {
-            this.ctx.imageSmoothingEnabled = false;
-            this.ctx.drawImage(this.image, 0, 0);
+        this.image.src = 'images/gros.jpg';
 
-            this.imageData = this.ctx.getImageData(0, 0, this.image.width, this.image.height);
+        this.image.onload = () => {
+            let canvas = new Konva.Image({
+                x: 0,
+                y: 0,
+                image: this.image,
+                width: 100,
+                height: 100,
+            })
+
+            this.layer.add(canvas);
+
+            // this.ctx.imageSmoothingEnabled = false;
+            // this.ctx.drawImage(this.image, 0, 0);
+
+            // this.imageData = this.ctx.getImageData(0, 0, this.image.width, this.image.height);
 
             this.setupEvents();
-            
-            this.draw()
+
+            // this.draw()
         }
     }
 
