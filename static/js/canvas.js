@@ -4,7 +4,7 @@ import { newPixel } from "./sidebar";
 import Konva from "konva";
 import React from "react";
 import { render } from "react-dom";
-import { Image, Stage, Layer, Text } from "react-konva"
+import { Image, Stage, Layer, Text, Rect, Group } from "react-konva"
 import useImage from 'use-image';
 
 export let colors = [
@@ -32,7 +32,7 @@ class Pixel {
         this.x = x;
         this.y = y;
         this.color = color;
-        
+
         // The pixel it replaces so we can revert it
         this.oldColor = oldColor;
     }
@@ -44,9 +44,9 @@ export function init() {
 
 /// React Components
 
-function CanvasImage(props) {
+function CanvasImage() {
     const [image] = useImage("images/canvas.png");
-    return <Image onMouseDown={props.mousedown} draggable image={image} />
+    return <Image image={image} />
 }
 
 export class Canvas extends React.Component {
@@ -77,10 +77,17 @@ export class Canvas extends React.Component {
     }
 
     getPos = (e) => {
-        let stage = e.target.getStage();
         let shape = e.target;
+        let pos = shape.getRelativePointerPosition();
 
-        console.log(shape.getRelativePointerPosition())
+        console.log(pos);
+
+        let pixels = [...this.state.pixels, {
+            x: pos.x,
+            y: pos.y,
+        }];
+
+        this.setState({ pixels });
     }
 
     updateState() {
@@ -100,8 +107,30 @@ export class Canvas extends React.Component {
                 x={this.state.stageX}
                 y={this.state.stageY}
             >
+
+
                 <Layer imageSmoothingEnabled={false}>
-                    <CanvasImage mousedown={this.getPos} />
+
+                    <Group draggable onMouseDown={this.getPos}>
+
+                        <CanvasImage/>
+                        <Rect x={100} y={100} width={100} height={100} fill="red" />
+
+                        {this.state.pixels.map((square, i) => {                            
+                            return <Rect
+                                x={Math.floor(square.x)}
+                                y={Math.floor(square.y)}
+                                width={1}
+                                height={1}
+                                stroke="black"
+                                strokeWidth={0.01}
+                                fill="red"
+                                key={i}
+                            />
+                        })}
+
+                    </Group>
+
                     <Text text="Try click on rect" />
                 </Layer>
             </Stage>
