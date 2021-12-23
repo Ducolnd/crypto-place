@@ -1,10 +1,8 @@
 import { sendPixels, activateCardano } from "./wallet";
-import { Canvas, colors, init } from "./canvas";
+import { Canvas, colors } from "./canvas";
 
-import React, { useRef } from "react";
+import React from "react";
 import { render } from 'react-dom';
-
-// document.addEventListener("#cryptoContainer", event => event.preventDefault());
 
 // React Components
 
@@ -16,11 +14,15 @@ class App extends React.Component {
         this.state = {
             currentColor: [0, 0, 0],
             bufferedPixels: [],
+            transaction: {},
         }
     }
 
     newPixel = (pos) => {
-        console.log(pos);
+        if (this.state.bufferedPixels.length > 100) {
+            return
+        }
+
         const pixel = {
             x: Math.floor(pos.x),
             y: Math.floor(pos.y),
@@ -51,6 +53,33 @@ class App extends React.Component {
         })
     }
 
+
+    handleSubmit = () => {
+        let pixels = this.state.bufferedPixels;
+
+        // Perform a couple of checks
+        let numPixels = pixels.length
+        if (numPixels == 0 || numPixels >= 100) {
+            return;
+        }
+
+        // Construct the transaction with the pixels
+        sendPixels(pixels).then(
+            hash => {
+                console.log("The transaction was successful!", hash);
+                $("#hash-success").html(`<p style="overflow-wrap: break-word;">The transaction was successful!: <a target="_blank" href=${'https://explorer.cardano-testnet.iohkdev.io/en/transaction?id=' + hash}>${hash}</a></p>`);
+            },
+            failure => {
+                $("#hash-success").html(`<p>Failure</p>`);
+            }
+        );
+
+        // Remove all pixels
+        this.setState({
+            bufferedPixels: [],
+        })
+    }
+
     render() {
         return (
             <div>
@@ -58,7 +87,7 @@ class App extends React.Component {
                     <div id="cryptoContainer">
                         <Canvas pixels={this.state.bufferedPixels} newPixel={this.newPixel} />
                     </div>
-                    <SideBar pixels={this.state.bufferedPixels} removedPixel={this.removedPixel} />
+                    <SideBar pixels={this.state.bufferedPixels} handleSubmit={this.handleSubmit} removedPixel={this.removedPixel} />
                 </div>
 
                 <ColorBox newColor={this.newColor} colors={colors} />
@@ -70,55 +99,23 @@ class App extends React.Component {
 class SideBar extends React.Component {
     constructor(props) {
         super(props)
-
-        this.state = props;
     }
 
     handleSubmit = () => {
-        let pixels = [];
-
-        // Perform a couple of checks
-        let numPixels = Object.keys(canvas.bufferedPixels).length
-        if (numPixels == 0 || numPixels >= 100) {
-            return;
-        }
-
-        // Format correctly
-        for (let [_, val] of Object.entries(canvas.bufferedPixels)) {
-            pixels.push([
-                val.x,
-                val.y,
-                val.color[0],
-                val.color[1],
-                val.color[2],
-            ])
-        }
-
-        console.log(pixels);
-        // Construct the transaction with the pixels
-        sendPixels(pixels).then(
-            hash => {
-                console.log("Transaction was successful: hash", hash);
-                $("#hash-success").html(`<p>Success. Transation hash: <a target="_blank" href=${'https://explorer.cardano-testnet.iohkdev.io/en/transaction?id=' + hash}>${hash}</a></p>`);
-            },
-            failure => {
-                $("#hash-success").html(`<p>Failure</p>`);
-            }
-        );
-
-        // Update sidebar
-        newPixel({});
+        this.props.handleSubmit();
     }
 
     removedPixel = (key) => {
-        this.state.removedPixel(key);
+        this.props.removedPixel(key);
     }
 
     render() {
+        const numPixels = this.props.pixels.length;
+
         return (
             <div id="infobar">
                 <p><b>Buffered Pixels:</b></p>
-                <p id="pixelCounter">{this.state.numPlaced}</p>
+                <p id="pixelCounter">{numPixels} {numPixels > 100 && " - can't place more than 100 pixels!!"}</p>
                 <div id="bufferedPixels">
                     {this.props.pixels.map((pixel, i) => {
                         return <div onClick={() => this.removedPixel(i)} key={i} className="pixelentry"><span style={{color: `rgb(${pixel.r},${pixel.g},${pixel.b})`}}>&#9632;</span>({pixel.x}, {pixel.y})</div>
@@ -144,24 +141,42 @@ class SideBar extends React.Component {
     }
 }
 
+class ColorBox extends React.Component {
+    constructor(props) {
+        super(props)
 
-function ColorBox(props) {
-    let newColor = (index) => {
-        props.newColor(index);
+        this.state = {
+            selected: 1,
+        }
     }
     
-    return (
-        <div className="container">
-            <div id="colors">
-                <div><h1>Select Color</h1><p> (Click)</p></div>
-                {props.colors.map((color, i) => {
-                    return (
-                        <div onClick={() => newColor(i)} className="colorbox" key={i} style={{ "backgroundColor": rgb(color) }}></div>
-                    )
-                })}
+    newColor = (index) => {
+        this.setState({
+            selected: index,
+        });
+        this.props.newColor(index);
+    }
+    
+    render() {
+        return (
+            <div className="container">
+                <div id="colors">
+                    <div><h1>Select Color</h1><p> (Click)</p></div>
+                    {this.props.colors.map((color, i) => {
+                        if (i === this.state.selected) {
+                            return (
+                                <div style={{border: "3px black solid", backgroundColor: rgb(color)}} onClick={() => this.newColor(i)} className="colorbox" key={i}></div>
+                            )
+                        } else {
+                            return (
+                                <div onClick={() => this.newColor(i)} className="colorbox" key={i} style={{ "backgroundColor": rgb(color) }}></div>
+                            )
+                        }
+                    })}
+                </div>
             </div>
-        </div>
-    )
+        )
+    }
 }
 
 // Etc
@@ -176,22 +191,6 @@ function rgb(color) {
 
 // Jquery
 
-//  Add pixel to the sidebar
-export function newPixel(bufferedPixels) {
-    $("#bufferedPixels").empty();
-
-    for (let [_, pixel] of Object.entries(bufferedPixels)) {
-        let element = $(`<div class="pixelentry"><span>&#9632</span>(${pixel.x}, ${pixel.y})</div>`);
-
-        element.children("span").css("color", rgb(pixel.color));
-        element.attr("loc", `${pixel.x}${pixel.y}`)
-
-        $("#bufferedPixels").prepend(element);
-    }
-    let numPixels = Object.keys(bufferedPixels).length;
-    $("#pixelCounter").html(numPixels > 10 ? `${numPixels} - too many` : numPixels)
-}
-
 $(document).ready(function () {
     renderApp();
 
@@ -200,49 +199,4 @@ $(document).ready(function () {
     $("#connectBtn").click(function () {
         activateCardano();
     });
-
-    // When a color is selected
-    $(".colorbox").click(function () {
-        $("#colors").children().css("border", "none");
-
-        window.currentColor = parseInt($(this).attr("id"));
-        $(this).css("border", "3px black solid")
-    })
-
-    // When pixels are submitted via button
-    $("#submitPixels").click(function () {
-        let pixels = [];
-
-        // Perform a couple of checks
-        let numPixels = Object.keys(canvas.bufferedPixels).length
-        if (numPixels == 0 || numPixels >= 100) {
-            return;
-        }
-
-        // Format correctly
-        for (let [_, val] of Object.entries(canvas.bufferedPixels)) {
-            pixels.push([
-                val.x,
-                val.y,
-                val.color[0],
-                val.color[1],
-                val.color[2],
-            ])
-        }
-
-        console.log(pixels);
-        // Construct the transaction with the pixels
-        sendPixels(pixels).then(
-            hash => {
-                console.log("Transaction was successful: hash", hash);
-                $("#hash-success").html(`<p>Success. Transation hash: <a target="_blank" href=${'https://explorer.cardano-testnet.iohkdev.io/en/transaction?id=' + hash}>${hash}</a></p>`);
-            },
-            failure => {
-                $("#hash-success").html(`<p>Failure</p>`);
-            }
-        );
-
-        // Update sidebar
-        newPixel({});
-    })
 });

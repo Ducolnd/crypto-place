@@ -1,9 +1,7 @@
 "use strict";
 
-import { newPixel } from "./sidebar";
-import Konva from "konva";
 import React from "react";
-import { Image, Stage, Layer, Text, Rect, Group } from "react-konva"
+import { Image, Stage, Layer, Rect, Group } from "react-konva"
 import useImage from 'use-image';
 
 export const colors = [
@@ -24,18 +22,6 @@ export const colors = [
     [0, 120, 153],
     [0, 40, 89],
 ];
-
-
-class Pixel {
-    constructor(x, y, color, oldColor) {
-        this.x = x;
-        this.y = y;
-        this.color = color;
-
-        // The pixel it replaces so we can revert it
-        this.oldColor = oldColor;
-    }
-}
 
 /// React Components
 
@@ -77,7 +63,6 @@ export class Canvas extends React.Component {
 
     onClick = (e) => {
         if (e.evt.button === 2) {
-            console.log("right lcikc");
             let shape = e.target;
             let pos = shape.getRelativePointerPosition();
     
@@ -99,9 +84,7 @@ export class Canvas extends React.Component {
                     e.evt.preventDefault(); // Prevent right click menu
                 }}
             >
-
                 <Layer imageSmoothingEnabled={false}>
-
                     <Group draggable onMouseDown={this.onClick}>
 
                         <CanvasImage />
@@ -120,8 +103,6 @@ export class Canvas extends React.Component {
                         })}
 
                     </Group>
-
-                    <Text text="Try click on rect" />
                 </Layer>
             </Stage>
         )
