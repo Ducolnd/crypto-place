@@ -3,11 +3,10 @@
 import { newPixel } from "./sidebar";
 import Konva from "konva";
 import React from "react";
-import { render } from "react-dom";
 import { Image, Stage, Layer, Text, Rect, Group } from "react-konva"
 import useImage from 'use-image';
 
-export let colors = [
+export const colors = [
     [22, 23, 26],
     [127, 6, 34],
     [214, 36, 17],
@@ -38,10 +37,6 @@ class Pixel {
     }
 }
 
-export function init() {
-    render(<App />, document.getElementById("place"));
-}
-
 /// React Components
 
 function CanvasImage() {
@@ -50,12 +45,16 @@ function CanvasImage() {
 }
 
 export class Canvas extends React.Component {
-    state = {
-        stageScale: 1,
-        stageX: 0,
-        stageY: 0,
-        relativePos: {},
-        pixels: [],
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            stageScale: 1,
+            stageX: 0,
+            stageY: 0,
+            relativePos: {},
+            newPixelCallback: props.newPixel,
+        }
     }
 
     handleWheel = (e) => {
@@ -76,22 +75,11 @@ export class Canvas extends React.Component {
         });
     }
 
-    getPos = (e) => {
+    onClick = (e) => {
         let shape = e.target;
         let pos = shape.getRelativePointerPosition();
 
-        console.log(pos);
-
-        let pixels = [...this.state.pixels, {
-            x: pos.x,
-            y: pos.y,
-        }];
-
-        this.setState({ pixels });
-    }
-
-    updateState() {
-
+        this.state.newPixelCallback(pos)
     }
 
     render() {
@@ -111,12 +99,12 @@ export class Canvas extends React.Component {
 
                 <Layer imageSmoothingEnabled={false}>
 
-                    <Group draggable onMouseDown={this.getPos}>
+                    <Group draggable onMouseDown={this.onClick}>
 
-                        <CanvasImage/>
+                        <CanvasImage />
                         <Rect x={100} y={100} width={100} height={100} fill="red" />
 
-                        {this.state.pixels.map((square, i) => {                            
+                        {this.props.pixels.map((square, i) => {
                             return <Rect
                                 x={Math.floor(square.x)}
                                 y={Math.floor(square.y)}
@@ -124,7 +112,7 @@ export class Canvas extends React.Component {
                                 height={1}
                                 stroke="black"
                                 strokeWidth={0.01}
-                                fill="red"
+                                fill={`rgb(${square.r},${square.g},${square.b})`}
                                 key={i}
                             />
                         })}
@@ -134,14 +122,6 @@ export class Canvas extends React.Component {
                     <Text text="Try click on rect" />
                 </Layer>
             </Stage>
-        )
-    }
-}
-
-class App extends React.Component {
-    render() {
-        return (
-            <Canvas />
         )
     }
 }
