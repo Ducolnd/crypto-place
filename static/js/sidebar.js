@@ -4,6 +4,8 @@ import { Canvas, colors, init } from "./canvas";
 import React, { useRef } from "react";
 import { render } from 'react-dom';
 
+// document.addEventListener("#cryptoContainer", event => event.preventDefault());
+
 // React Components
 
 class App extends React.Component {
@@ -191,10 +193,6 @@ export function newPixel(bufferedPixels) {
 }
 
 $(document).ready(function () {
-
-    // let canvas = new Canvas();
-    // canvas.init();
-
     renderApp();
 
     // Activate Cardano

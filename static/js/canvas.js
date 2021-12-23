@@ -76,10 +76,13 @@ export class Canvas extends React.Component {
     }
 
     onClick = (e) => {
-        let shape = e.target;
-        let pos = shape.getRelativePointerPosition();
-
-        this.state.newPixelCallback(pos)
+        if (e.evt.button === 2) {
+            console.log("right lcikc");
+            let shape = e.target;
+            let pos = shape.getRelativePointerPosition();
+    
+            this.state.newPixelCallback(pos);
+        }
     }
 
     render() {
@@ -88,21 +91,20 @@ export class Canvas extends React.Component {
                 width={window.innerWidth}
                 height={window.innerHeight}
                 onWheel={this.handleWheel}
-                // onMouseDown={this.handleMouseMove}
-                // onMouseMove={this.handleMouseMove}
                 scaleX={this.state.stageScale}
                 scaleY={this.state.stageScale}
                 x={this.state.stageX}
                 y={this.state.stageY}
+                onContextMenu={(e) => {
+                    e.evt.preventDefault(); // Prevent right click menu
+                }}
             >
-
 
                 <Layer imageSmoothingEnabled={false}>
 
                     <Group draggable onMouseDown={this.onClick}>
 
                         <CanvasImage />
-                        <Rect x={100} y={100} width={100} height={100} fill="red" />
 
                         {this.props.pixels.map((square, i) => {
                             return <Rect
