@@ -4,11 +4,22 @@ require('dotenv').config();
 const png = require('pngjs').PNG;
 const fs = require('fs');
 const axios = require('axios');
+const {createCanvas} = require('canvas');
+
 const walletId = process.env.WALLET_ID_REC;
+const CanvasPath = "./static/images/canvas.png";
 
 // Update canvas file with new pixels
 function updateCanvas(withPixels) {
-    fs.createReadStream("static/images/canvas.png")
+    if (!fs.existsSync("afile.png")) {
+        const canvas = createCanvas(100, 100);
+        canvas.getContext("2d").fillStyle = "white"
+        canvas.getContext("2d").fillRect(0,0,100,100);
+
+        fs.writeFileSync(CanvasPath, canvas.toBuffer("image/png"));
+    }
+    
+    fs.createReadStream(CanvasPath)
         .pipe(new png())
         .on("parsed", function () {
             try {
@@ -52,8 +63,6 @@ function checkTransactions(query_hours = 24, callback) {
                 let amount = parseFloat(transaction.amount.quantity) / 1000000.0;
                 let pixels = parseMetaData(transaction.metadata);
 
-                console.log(pixels);
-
                 // The metadata was not in the correct format
                 if (pixels === null) {
                     continue;
@@ -76,10 +85,6 @@ function checkTransactions(query_hours = 24, callback) {
             console.log('Error: ', err.message);
         })
 }
-
-checkTransactions(48, data => {
-    updateCanvas(data);
-})
 
 // Parses the unreadable Cardano Metadata into something workable
 function parseMetaData(metadata) {
@@ -105,3 +110,7 @@ function parseMetaData(metadata) {
         return null
     }
 }
+
+checkTransactions(48, data => {
+    updateCanvas(data);
+})
