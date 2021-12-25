@@ -23,12 +23,8 @@ app.get('/', (_, res) => {
     res.render("home");
 });
 
-app.get('/test', (_, res) => {
-    res.render("webpack-testing", {layout: "main"});
-});
-
-app.get('/info', (_, res) => {
-    res.render("info");
+app.get('/place', (_, res) => {
+    res.render("place");
 });
 
 app.get('/data', (_, res) => {
