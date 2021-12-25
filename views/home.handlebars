@@ -1,17 +1,22 @@
-<div id="test" class="container">
+<div class="container">
     <h1>Welcome to Crypto Place</h1>  
     <div id="instructions">
         <ul>
-            <li>You can select a color below. You can pan using middle mouse</li>
-            <li>Click to place a pixel. Your placed pixels are not definite yet</li>
-            <li>The pixels become definite once you submit the transaction by clicking the button. You can submit up to 100 pixels per transaction</li>
-            <li>You can remove a pixel by clicking it on the right or by holding middle mouse</li>
+            <li>Select a color on the left. Pan with left mouse</li>
+            <li>Click right mouse to place a pixel. Your placed pixels are not definite yet</li>
+            <li>The pixels become definite once you submit the transaction and confirm it, by clicking the button</li>
+            <li>You can submit up to 100 pixels per transaction. You can remove a pixel by clicking it on the right</li>
         </ul>
     </div>
 </div>
 
+{{!-- React content --}}
 <div id="root">
 
 </div>
 
-{{>scripts/homepageScripts}}
+{{!-- CSS --}}
+<link rel="stylesheet" href="css/main.css">
+
+{{!-- JavaScript --}}
+<script src="dist/canvas.js"></script>

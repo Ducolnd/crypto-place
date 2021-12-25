@@ -9,18 +9,10 @@
 }
 
 #cryptoContainer {
-    width: 80%;
     margin: 0;
     border: 2px black solid;
     overflow: hidden;
-    height: 100%;
-    float: left;
-}
-
-#infobar {
-    width: 20%;
-    float: right;
-    text-align: center;
+    height: 500px;
 }
 
 #bufferedPixels {
@@ -43,29 +35,23 @@
     text-align: center;
 }
 
-.colorbox {
-    height: 35px;
-    width: 60px;
-    display: inline-block;
-    cursor: pointer;
-}
-
 .pixelentry {
     border-bottom: 1px black solid;
     cursor: pointer; 
 }
 
+/* Color of pixel */
 .pixelentry span {
     font-size: 23px;
     margin-right: 10px;
 }
 
-#infobar button {
+#sidebar button {
     margin: 10px 0 10px 0;
 }
 
-#pixelInfo {
-    height: 250px;
+#sidebar {
+    text-align: center;
 }
 
 #pixelInfo p {
@@ -78,9 +64,10 @@
 
 #pageMain {
     width: 100%;
-    height: 600px;
     overflow: hidden;
 }
+
+/* Colorbar */
 
 #colors h1, #colors p {
     display: inline;
@@ -90,4 +77,11 @@
 
 #colors div {
     margin: 10px 0 10px 0;
+}
+
+.colorbox {
+    height: 35px;
+    width: 60px;
+    display: inline-block;
+    cursor: pointer;
 }

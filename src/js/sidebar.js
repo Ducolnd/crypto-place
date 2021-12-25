@@ -82,15 +82,26 @@ class App extends React.Component {
 
     render() {
         return (
-            <div>
-                <div id="pageMain">
-                    <div id="cryptoContainer">
-                        <Canvas pixels={this.state.bufferedPixels} newPixel={this.newPixel} />
-                    </div>
-                    <SideBar pixels={this.state.bufferedPixels} handleSubmit={this.handleSubmit} removedPixel={this.removedPixel} />
-                </div>
+            <div className="container-fluid">
+                <div className="row">
 
-                <ColorBox newColor={this.newColor} colors={colors} />
+                    <div className="col-lg-3">
+                        <ColorBox newColor={this.newColor} colors={colors} />
+                    </div>
+
+                    <div className="col-lg-7">
+                        <div id="pageMain">
+                            <div id="cryptoContainer">
+                                <Canvas pixels={this.state.bufferedPixels} newPixel={this.newPixel} />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="col-lg-2">
+                        <SideBar pixels={this.state.bufferedPixels} handleSubmit={this.handleSubmit} removedPixel={this.removedPixel} />
+                    </div>
+
+                </div>
             </div>
         )
     }
@@ -113,7 +124,7 @@ class SideBar extends React.Component {
         const numPixels = this.props.pixels.length;
 
         return (
-            <div id="infobar">
+            <div id="sidebar">
                 <p><b>Buffered Pixels:</b></p>
                 <p id="pixelCounter">{numPixels} {numPixels > 100 && " - can't place more than 100 pixels!!"}</p>
                 <div id="bufferedPixels">
@@ -159,7 +170,6 @@ class ColorBox extends React.Component {
     
     render() {
         return (
-            <div className="container">
                 <div id="colors">
                     <div><h1>Select Color</h1><p> (Click)</p></div>
                     {this.props.colors.map((color, i) => {
@@ -174,7 +184,6 @@ class ColorBox extends React.Component {
                         }
                     })}
                 </div>
-            </div>
         )
     }
 }
