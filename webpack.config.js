@@ -1,14 +1,19 @@
 const path = require('path');
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
     entry: {
-        canvas: "./static/js/sidebar.js",
+        canvas: "./src/js/sidebar.js",
     },
     output: {
         path: path.resolve(__dirname, "static", 'dist'),
     },
     mode: "development",
     devtool: "source-map",
+
+    plugins: [
+        new Dotenv()
+    ],
 
     module: {
         rules: [

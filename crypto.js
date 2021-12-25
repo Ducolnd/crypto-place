@@ -6,7 +6,7 @@ const fs = require('fs');
 const axios = require('axios');
 const {createCanvas} = require('canvas');
 
-const walletId = process.env.WALLET_ID_REC;
+const walletId = process.env.WALLET_ID;
 const CanvasPath = "./static/images/canvas.png";
 
 // Update canvas file with new pixels
