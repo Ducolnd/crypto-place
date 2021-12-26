@@ -27,7 +27,8 @@ export async function sendPixels(pixels) {
         amount: pixels.length * 0.1,
         metadata: {
             pixels: parsePixels(pixels),
-        }
+        },
+        metadataLabel: "982541024549416",
     })
 }
 

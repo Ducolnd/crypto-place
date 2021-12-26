@@ -6,8 +6,56 @@ const fs = require('fs');
 const axios = require('axios');
 const {createCanvas} = require('canvas');
 
-const walletId = process.env.WALLET_ID;
 const CanvasPath = "./static/images/canvas.png";
+const addr = process.env.WALLET_ADDR;
+const blockfrostKey = process.env.BLOCKFROST_KEY_TESTNET;
+const metadataLabel = 982541024549416;
+
+const requestHeaders = {
+    project_id: blockfrostKey,
+}
+
+let addrUri = (addr) => {
+    return `https://cardano-testnet.blockfrost.io/api/v0/addresses/${addr}/transactions`
+}
+
+let metaUri = (id) => {
+    return `https://cardano-testnet.blockfrost.io/api/v0/metadata/txs/labels/${id}`
+}
+
+async function queryMetadata(done) {
+    let hashes = [];
+    let metadata = [];
+
+    axios.get(addrUri(addr), {headers: requestHeaders, params: {order: "desc"}}).then(res => {
+        for (transaction of res.data) {
+            hashes.push(transaction.tx_hash);
+        }
+
+        axios.get(metaUri(metadataLabel), {headers: requestHeaders, params: {order: "desc"}}).then(res => {
+            for (tx of res.data) {
+                if (hashes.includes(tx.tx_hash)) {
+                    metadata.push(tx.json_metadata.pixels);
+
+                }
+            }
+
+            // return
+            done(metadata.reverse());
+        }).catch(err => {
+            console.log("failed", err);
+        })
+        
+    }).catch(err => {
+        console.log("failed", err)
+    })
+
+}
+
+queryMetadata(res => {
+    console.log(res);
+    updateCanvas(res);
+})
 
 // Update canvas file with new pixels
 function updateCanvas(withPixels) {
@@ -25,11 +73,11 @@ function updateCanvas(withPixels) {
             try {
                 for (const pixelGroup of withPixels) {
                     for (const pixel of pixelGroup) {
-                        let i = idx(pixel.x, pixel.y, this.width);
+                        let i = idx(pixel[0], pixel[1], this.width);
 
-                        this.data[i] = pixel.r;
-                        this.data[i + 1] = pixel.g;
-                        this.data[i + 2] = pixel.b;
+                        this.data[i] = pixel[2];
+                        this.data[i + 1] = pixel[3];
+                        this.data[i + 2] = pixel[4];
                         this.data[i + 3] = 255;
                     }
                 }
@@ -49,68 +97,3 @@ function updateCanvas(withPixels) {
 function idx(x, y, width) {
     return (width * y + x) << 2;
 }
-
-function checkTransactions(query_hours = 24, callback) {
-    let date = new Date((new Date() - query_hours * 60 * 60 * 1000)).toISOString(); // From when we want to query transactions
-    let transactionPixelHistory = [];
-
-    axios.get(`http://localhost:8090/v2/wallets/${walletId}/transactions?start=${date}`).then(res => {
-        for (let i = 0; i < res.data.length; i++) {
-            let transaction = res.data[i];
-
-            // Make sure it is meant for us
-            if (transaction.metadata !== null && transaction.direction === "incoming") {
-                let amount = parseFloat(transaction.amount.quantity) / 1000000.0;
-                let pixels = parseMetaData(transaction.metadata);
-
-                // The metadata was not in the correct format
-                if (pixels === null) {
-                    continue;
-                }
-
-                // No enough funds
-                if (pixels.length * 0.1 > amount) {
-                    // Remove surplus pixels
-                    pixels.slice(parseInt(amount * 10), pixels.length);
-                }
-
-                transactionPixelHistory.push(pixels);
-            }
-        }
-
-        callback(transactionPixelHistory);
-    })
-
-        .catch(err => {
-            console.log('Error: ', err.message);
-        })
-}
-
-// Parses the unreadable Cardano Metadata into something workable
-function parseMetaData(metadata) {
-    let data = [];
-
-    try {
-        for (let pixel of metadata["721"].map[0].v.list) {
-            let d = {};
-            let raw = pixel.list;
-
-            d["x"] = raw[0].int;
-            d["y"] = raw[1].int;
-            d["r"] = raw[2].int;
-            d["g"] = raw[3].int;
-            d["b"] = raw[4].int;
-
-            data.push(d);
-        }
-
-        return data
-    }
-    catch (e) {
-        return null
-    }
-}
-
-checkTransactions(48, data => {
-    updateCanvas(data);
-})
