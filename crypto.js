@@ -119,7 +119,7 @@ function updateCanvas(withPixels) {
             this.pack()
                 .pipe(fs.createWriteStream("static/images/canvas.png"))
                 .on("finish", function () {
-                    console.log("Wrote pixels");
+                    console.log("Wrote", withPixels.length, "transactions");
                 });
         });
 }
@@ -129,10 +129,15 @@ function idx(x, y, width) {
     return (width * y + x) << 2;
 }
 
-setInterval(() => {
+function get() {
     queryMetadata(res => {
         if (res.length > 0) {
             updateCanvas(res);
         }
     })
+}
+
+get();
+setInterval(() => {
+    get();
 }, 10000)
