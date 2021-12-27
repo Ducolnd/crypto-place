@@ -32,12 +32,18 @@ export async function sendPixels(pixels) {
     })
 }
 
-export async function activateCardano() {
+export function activateCardano() {
     wallet.enable().then(result => {
         $("#connectBtn").text('Connected');
         $("#connectBtn").attr('class', 'btn btn-success');
     }, 
     error => {
-        alert("could not connect", error);
+        $("#connectBtn").text('Attempting to connect with wallet...');
+        $("#connectBtn").attr('class', 'btn btn-info');
+
+        setTimeout(() => {
+            $("#connectBtn").text('Failed to connect with Nami Wallet');
+            $("#connectBtn").attr('class', 'btn btn-danger');
+        }, 500)
     })
 }

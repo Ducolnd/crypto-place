@@ -203,6 +203,9 @@ function rgb(color) {
 $(document).ready(function () {
     renderApp();
 
+    let element = <button id="connectBtn" className="btn btn-dark">Click to connect</button>
+    render(element, document.getElementById("connected-root"))
+
     // Activate Cardano
     activateCardano();
     $("#connectBtn").click(function () {
