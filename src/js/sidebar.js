@@ -14,6 +14,7 @@ class App extends React.Component {
         this.state = {
             currentColor: [0, 0, 0],
             bufferedPixels: [],
+            retainPixels: [], // Keep on showing submitted pixels for a while
             transaction: {},
         }
     }
@@ -68,16 +69,24 @@ class App extends React.Component {
             hash => {
                 console.log("The transaction was successful!", hash);
                 $("#hash-success").html(`<p style="overflow-wrap: break-word;">The transaction was successful!: <a target="_blank" href=${'https://explorer.cardano-testnet.iohkdev.io/en/transaction?id=' + hash}>${hash}</a></p>`);
+
+                // Remove pixels from sidebar and update retainpixels
+                this.setState({
+                    retainPixels: [...this.state.retainPixels, ...this.state.bufferedPixels],
+                    bufferedPixels: [],
+                });
+        
+                // After two minutes the canvas has most likely already been updated so we remove the pixels
+                setTimeout(() => {
+                    this.setState({
+                        retainPixels: [],
+                    })
+                },  2 * 60 * 1000);
             },
             failure => {
-                $("#hash-success").html(`<p>Failure</p>`);
+                $("#hash-success").html(`<p>Failure on computing transaction, ${failure}</p>`);
             }
         );
-
-        // Remove all pixels
-        this.setState({
-            bufferedPixels: [],
-        })
     }
 
     render() {
@@ -92,7 +101,7 @@ class App extends React.Component {
                     <div className="col-lg-7">
                         <div id="pageMain">
                             <div id="cryptoContainer">
-                                <Canvas pixels={this.state.bufferedPixels} newPixel={this.newPixel} />
+                                <Canvas pixels={[...this.state.retainPixels, ...this.state.bufferedPixels]} newPixel={this.newPixel} />
                             </div>
                         </div>
                     </div>
