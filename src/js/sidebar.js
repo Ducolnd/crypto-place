@@ -170,7 +170,7 @@ class SideBar extends React.Component {
 
                 <div id="hash-success">Hash will appear here</div>
 
-                <div id="pixelInfo">
+                {/* <div id="pixelInfo">
                     <p id="pixelInfoText">
                         Mousepos:
                         x <span id="mousex"></span>
@@ -179,7 +179,7 @@ class SideBar extends React.Component {
                     </p>
                     <p>Pixel placed by: <span id="pixelPlacedBy"></span></p>
                     <p>Pixel history</p>
-                </div>
+                </div> */}
             </div>
         )
     }

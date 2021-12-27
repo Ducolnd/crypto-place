@@ -71,6 +71,9 @@ export class Canvas extends React.Component {
     constructor(props) {
         super(props);
 
+        this.drawing = false;
+        this.pos = [];
+
         this.state = {
             stageScale: 4,
             stageX: 0,
@@ -101,10 +104,40 @@ export class Canvas extends React.Component {
     onClick = (e) => {
         // New pixel placed
         if (e.evt.button === 2) {
+            this.drawing = true;
+
             let shape = e.target;
             let pos = shape.getRelativePointerPosition();
+            
+            let key = `${Math.floor(pos.x)}${Math.floor(pos.y)}`;
+            
+            if (!this.pos.includes(key)) {
+                this.state.newPixelCallback(pos);
+                this.pos.push(`${Math.floor(pos.x)}${Math.floor(pos.y)}`);
+            }
+        }
+    }
 
+    onMove = (e) => {
+        if (!this.drawing) {
+            return;
+        }
+
+        let shape = e.target;
+        let pos = shape.getRelativePointerPosition();
+
+        let key = `${Math.floor(pos.x)}${Math.floor(pos.y)}`;
+        
+        if (!this.pos.includes(key)) {
             this.state.newPixelCallback(pos);
+            this.pos.push(`${Math.floor(pos.x)}${Math.floor(pos.y)}`);
+        }
+    }
+
+    onEnd = (e) => {
+        if (e.evt.button === 2) {
+            this.drawing = false;
+            this.pos = [];
         }
     }
 
@@ -123,7 +156,12 @@ export class Canvas extends React.Component {
                 }}
             >
                 <Layer imageSmoothingEnabled={false}>
-                    <Group draggable onMouseDown={this.onClick}>
+                    <Group 
+                        draggable 
+                        onMouseDown={this.onClick}
+                        onMouseMove={this.onMove}
+                        onMouseUp={this.onEnd}
+                    >
 
                         <CanvasImage />
 
