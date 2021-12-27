@@ -41,9 +41,7 @@ class CanvasImage extends React.Component {
         this.image.removeEventListener('load', this.handleLoad);
     }
     loadImage = () => {
-        // save to "this" to remove "load" handler on unmount
-        console.log("image loading");
-        
+        // save to "this" to remove "load" handler on unmount        
         this.image = new window.Image();
         this.image.src = this.state.src
         this.image.addEventListener('load', this.handleLoad);
@@ -62,6 +60,8 @@ class CanvasImage extends React.Component {
                 ref={node => {
                     this.imageNode = node;
                 }}
+                stroke="black"
+                strokeWidth={1}
             />
         );
     }
@@ -81,7 +81,7 @@ export class Canvas extends React.Component {
     }
 
     handleWheel = (e) => {
-        const scaleBy = 1.04;
+        const scaleBy = 0.94;
         const stage = e.target.getStage();
         const oldScale = stage.scaleX();
         const mousePointTo = {
@@ -99,6 +99,7 @@ export class Canvas extends React.Component {
     }
 
     onClick = (e) => {
+        // New pixel placed
         if (e.evt.button === 2) {
             let shape = e.target;
             let pos = shape.getRelativePointerPosition();
@@ -136,6 +137,7 @@ export class Canvas extends React.Component {
                                 strokeWidth={0.01}
                                 fill={`rgb(${square.r},${square.g},${square.b})`}
                                 key={i}
+                                listening={false}
                             />
                         })}
 

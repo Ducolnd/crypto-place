@@ -13,7 +13,7 @@ class App extends React.Component {
 
         this.state = {
             currentColor: [0, 0, 0],
-            bufferedPixels: [],
+            bufferedPixels: {},
             retainPixels: [], // Keep on showing submitted pixels for a while
             transaction: {},
         }
@@ -31,10 +31,31 @@ class App extends React.Component {
             g: this.state.currentColor[1],
             b: this.state.currentColor[2],
         };
+        const key = `${Math.floor(pos.x)}${Math.floor(pos.y)}`; // Replace if already exists
+        
+        if (key in this.state.bufferedPixels) {
+            let p = this.state.bufferedPixels[key];
 
-        this.setState({
-            bufferedPixels: [...this.state.bufferedPixels, pixel],
-        })
+            // Remove pixel if color is same 
+            if (p.r === pixel.r && p.g === pixel.g && p.b === pixel.b) {
+                let n = {...this.state.bufferedPixels};
+                delete n[key];
+
+                this.setState({
+                    bufferedPixels: {...n},
+                })
+                
+            } else {
+                this.setState({
+                    bufferedPixels: {...this.state.bufferedPixels, [key]: pixel},
+                })
+            }
+
+        } else {
+            this.setState({
+                bufferedPixels: {...this.state.bufferedPixels, [key]: pixel},
+            })
+        }
     }
 
     newColor = (index) => {
@@ -46,8 +67,10 @@ class App extends React.Component {
     }
 
     removedPixel = (index) => {
-        let another = [...this.state.bufferedPixels];
-        another.splice(index, 1);
+        let another = this.state.bufferedPixels;
+        let key = Object.keys(this.state.bufferedPixels)[index];
+
+        delete another.key;
         
         this.setState({
             bufferedPixels: another,
@@ -65,14 +88,14 @@ class App extends React.Component {
         }
 
         // Construct the transaction with the pixels
-        sendPixels(pixels).then(
+        sendPixels(Object.values(pixels)).then(
             hash => {
                 console.log("The transaction was successful!", hash);
                 $("#hash-success").html(`<p style="overflow-wrap: break-word;">The transaction was successful!: <a target="_blank" href=${'https://explorer.cardano-testnet.iohkdev.io/en/transaction?id=' + hash}>${hash}</a></p>`);
 
                 // Remove pixels from sidebar and update retainpixels
                 this.setState({
-                    retainPixels: [...this.state.retainPixels, ...this.state.bufferedPixels],
+                    retainPixels: [...this.state.retainPixels, ...Object.values(this.state.bufferedPixels)],
                     bufferedPixels: [],
                 });
         
@@ -84,7 +107,8 @@ class App extends React.Component {
                 },  2 * 60 * 1000);
             },
             failure => {
-                $("#hash-success").html(`<p>Failure on computing transaction, ${failure}</p>`);
+                console.log("Failure on computing transactoin:", failure);
+                $("#hash-success").html(`<p>Failure on computing transaction</p>`);
             }
         );
     }
@@ -101,13 +125,13 @@ class App extends React.Component {
                     <div className="col-lg-7">
                         <div id="pageMain">
                             <div id="cryptoContainer">
-                                <Canvas pixels={[...this.state.retainPixels, ...this.state.bufferedPixels]} newPixel={this.newPixel} />
+                                <Canvas pixels={[...this.state.retainPixels, ...Object.values(this.state.bufferedPixels)]} newPixel={this.newPixel} />
                             </div>
                         </div>
                     </div>
 
                     <div className="col-lg-2">
-                        <SideBar pixels={this.state.bufferedPixels} handleSubmit={this.handleSubmit} removedPixel={this.removedPixel} />
+                        <SideBar pixels={Object.values(this.state.bufferedPixels)} handleSubmit={this.handleSubmit} removedPixel={this.removedPixel} />
                     </div>
 
                 </div>
@@ -220,4 +244,6 @@ $(document).ready(function () {
     $("#connectBtn").click(function () {
         activateCardano();
     });
+
+    $("#pageMain").bind("wheel mousewheel", function(e) {e.preventDefault()});
 });
