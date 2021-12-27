@@ -25,9 +25,46 @@ export const colors = [
 
 /// React Components
 
-function CanvasImage() {
-    const [image] = useImage("images/canvas.png");
-    return <Image image={image} />
+class CanvasImage extends React.Component {
+    state = {
+        image: null,
+        src: "images/canvas.png",
+    };
+
+    componentDidMount() {
+        this.loadImage();
+
+        setInterval(this.loadImage, 10000); // Reload image every 10 seconds
+    }
+
+    componentWillUnmount() {
+        this.image.removeEventListener('load', this.handleLoad);
+    }
+    loadImage = () => {
+        // save to "this" to remove "load" handler on unmount
+        console.log("image loading");
+        
+        this.image = new window.Image();
+        this.image.src = this.state.src
+        this.image.addEventListener('load', this.handleLoad);
+    }
+    handleLoad = () => {
+        this.setState({
+            image: this.image
+        });
+
+        this.imageNode.getLayer().batchDraw();
+    };
+    render() {
+        return (
+            <Image
+                image={this.state.image}
+                ref={node => {
+                    this.imageNode = node;
+                }}
+            />
+        );
+    }
 }
 
 export class Canvas extends React.Component {
@@ -35,7 +72,7 @@ export class Canvas extends React.Component {
         super(props);
 
         this.state = {
-            stageScale: 1,
+            stageScale: 4,
             stageX: 0,
             stageY: 0,
             relativePos: {},
@@ -65,7 +102,7 @@ export class Canvas extends React.Component {
         if (e.evt.button === 2) {
             let shape = e.target;
             let pos = shape.getRelativePointerPosition();
-    
+
             this.state.newPixelCallback(pos);
         }
     }
