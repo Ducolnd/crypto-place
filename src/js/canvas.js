@@ -41,10 +41,11 @@ class CanvasImage extends React.Component {
         this.image.removeEventListener('load', this.handleLoad);
     }
     loadImage = () => {
-        // save to "this" to remove "load" handler on unmount      
-        this.image = new window.Image();
-        this.image.src = this.state.src + "?cache=" + Date.now();
-        this.image.addEventListener('load', this.handleLoad);
+        if (!document.hidden) { // Detect if user is active
+            this.image = new window.Image();
+            this.image.src = this.state.src + "?cache=" + Date.now();
+            this.image.addEventListener('load', this.handleLoad);
+        }
     }
     handleLoad = () => {
         this.setState({
@@ -118,7 +119,7 @@ export class Canvas extends React.Component {
         }
     }
 
-    onMove = (e) => {
+    onMove = (e) => {               
         if (!this.drawing) {
             return;
         }

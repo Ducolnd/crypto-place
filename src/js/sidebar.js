@@ -12,7 +12,7 @@ class App extends React.Component {
         super(props);
 
         this.state = {
-            currentColor: [0, 0, 0],
+            currentColor: [22, 23, 26],
             bufferedPixels: {},
             retainPixels: [], // Keep on showing submitted pixels for a while
             transaction: {},
@@ -190,7 +190,7 @@ class ColorBox extends React.Component {
         super(props)
 
         this.state = {
-            selected: 1,
+            selected: 0,
         }
     }
     
