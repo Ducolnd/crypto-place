@@ -1,3 +1,11 @@
 #intro-example {
     height: 610px;
 }
+
+.card .bg-image  {
+    height: 240px;
+}
+
+#why {
+    margin-top: 50px;
+}

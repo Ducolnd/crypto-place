@@ -1,52 +1,115 @@
 <link rel="stylesheet" href="/css/homepage.css">
 
-<div id="intro-example" class="p-5 text-center bg-image"
-    style="background-image: url('/images/cardano.png');">
-    <div class="mask d-flex justify-content-center align-items-center" style="background-color: rgba(0, 0, 0, 0.4);">
-        <div class="">
-            <div class="text-white">
-                <h1 class="mb-3">Welcome to Cryptoplace!</h1>
-                <h5 class="mb-4">A drawable 1024x1024 pixel grid powed by the Cardano blockchain</h5>
-                <a class="btn btn-outline-light btn-lg m-2" href="https://www.youtube.com/watch?v=c9B4TPnak1A"
-                    role="button" rel="nofollow" target="_blank">Place pixels</a>
-                <a class="btn btn-outline-light btn-lg m-2" href="https://mdbootstrap.com/docs/standard/"
-                    target="_blank" role="button">Learn</a>
-            </div>
-        </div>
+<div id="intro-example" class="bg-dark d-flex align-items-center justify-content-center">
+    <div class="text-light text-center  ">
+        <h1 class="mb-3">Welcome to Cryptoplace!</h1>
+        <h5 class="mb-4">A drawable 1024x1024 pixel grid powered by the Cardano blockchain</h5>
+        <a class="btn btn-outline-light btn-lg m-2" href="/place" role="button">Place pixels</a>
+        <a class="btn btn-outline-light btn-lg m-2" href="/data" role="button">Data</a>
     </div>
 </div>
 
 <div class="container">
-    <h1 class="text-center mt-5">How does it work?</h1>
-
     <div id="how">
+        <h1 class="text-center mt-5">How to get started</h1>
         <div class="card-group mt-3">
             <div class="card">
-                <img src="/images/nami.png" alt="">
+                <div class="bg-image">
+                    <img src="images/nami.png" class="img-fluid" alt="">
+                </div>
 
                 <div class="card-body">
                     <h5 class="card-title">Connect wallet</h5>
-                    <p class="card-text">Connect with <a target="_blank" href="https://namiwallet.io/">Nami Wallet</a> and transfer some funds</p>
+                    <p class="card-text">Start by connecting <a target="_blank" href="https://namiwallet.io/">Nami
+                            Wallet</a>
+                        with cryptoplace.games. Install the <a target="_blank"
+                            href="https://chrome.google.com/webstore/detail/nami/lpfcbjknijpeeillifnkikgncikgfhdo?hl=de">Chrome
+                            extension</a>
+                        for Nami Wallet. Next, create a new wallet, write down your seed phrase and finally transfer
+                        some funds (i.e. 20₳).</p>
                 </div>
             </div>
 
             <div class="card">
-                <img src="/images/cardano.png" alt="">
+                <div class="bg-image">
+                    <img src="images/cardano.png" class="img-fluid" alt="">
+                </div>
 
                 <div class="card-body">
                     <h5 class="card-title">Place pixels</h5>
-                    <p class="card-text">Start placing pixels with right mouse button.</p>
+                    <p class="card-text">
+                        Once you have authorized cryptoplace.games to see your wallet, you can start placing pixels!
+                        Head over to the <a href="/place">canvas</a>, place pixels using right mouse click and move
+                        around using left mouse click.
+                    </p>
                 </div>
             </div>
 
             <div class="card">
-                <img src="/images/canvas.png" alt="">
+                <div class="bg-image">
+                    <img src="images/canvas.png" class="img-fluid" alt="">
+                </div>
 
                 <div class="card-body">
                     <h5 class="card-title">Confirm</h5>
-                    <p class="card-text">Finally, make your pixels definite by confirming your transaction.</p>
+                    <p class="card-text">
+                        Finally, permanently store your pixels on the Cardano blockchain by submitting them and by
+                        finalizing the transaction. It might take up to 2 minutes for your pixels to be visible
+                        for everyone.
+                    </p>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div id="why" class="">
+        <div class="row">
+            <div class="col-6">
+                <h1 class="text-center">Why decentralized?</h1>
+
+                <p class="text-center">
+                    You might rightfully wonder: why does this need to be decentralized?
+                    Although cryptoplace would perfectly function using a regular, centralized system, you would never have full 
+                    certainty that the website will be maintained for ever. A decentralized application does not even need a website to function.
+                    In fact, you don't even need to be on cryptoplace.games to place pixels. As long as the right amount of ADA is sent to the
+                    right address with the correct metadata, the pixels will become visible. <br><br>
+                    Anyone can generate their own canvas by reading the blockchain at any given point, without any interaction with cryptoplace. This also means that all
+                    pixels will be stored on the blockchain for as long as Cardano continous to exist.
+                </p>
+            </div>
+            <div class="col-6"></div>
+        </div>
+
+        <div class="row">
+            <div class="col-6"></div>
+            <div class="col-6">
+                <h1 class="text-center">What does it cost?</h1>
+
+                <p class="text-center">
+                    Each pixel submitted costs 0.1 ADA (₳). This is to prevent spam and misabuse as it is impossible to
+                    prevent
+                    this because of the decentralized nature of cryptoplace and Cardano.
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <h1 class="text-center">How does it work?</h1>
+
+                <p class="text-center">
+                    Cryptoplace pixel data is stored on the Cardano blockchain by means of <a target="_blank"
+                        href="https://developers.cardano.org/docs/transaction-metadata/">Transaction metadata</a>.
+                    A secondary (server-side) <a target="_blank"
+                        href="https://github.com/Ducolnd/crypto-place/blob/master/crypto.js">application</a>
+                    continiously queries the blockchain
+                    for new transactions (pixels) on a specific address. Once it receives a new transaction, it reads
+                    its metadata and modifies the canvas. To verify the canvas youself,
+                    take a look at the <a target="_blank" href="https://github.com/Ducolnd/crypto-place">github
+                        repository</a>
+                </p>
+            </div>
+            <div class="col-6"></div>
         </div>
     </div>
 </div>
