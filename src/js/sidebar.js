@@ -11,9 +11,11 @@ class App extends React.Component {
 
         super(props);
 
+        let storage = this.getStorage();
+
         this.state = {
             currentColor: [22, 23, 26],
-            bufferedPixels: {},
+            bufferedPixels: (storage === null) ? {} : storage,
             retainPixels: [], // Keep on showing submitted pixels for a while
             transaction: {},
         }
@@ -56,6 +58,8 @@ class App extends React.Component {
                 bufferedPixels: {...this.state.bufferedPixels, [key]: pixel},
             })
         }
+
+        this.updateStorage();
     }
 
     newColor = (index) => {
@@ -70,11 +74,13 @@ class App extends React.Component {
         let another = this.state.bufferedPixels;
         let key = Object.keys(this.state.bufferedPixels)[index];
 
-        delete another.key;
+        delete another[key];
         
         this.setState({
             bufferedPixels: another,
-        })
+        });
+
+        this.updateStorage();
     }
 
 
@@ -98,6 +104,8 @@ class App extends React.Component {
                     retainPixels: [...this.state.retainPixels, ...Object.values(this.state.bufferedPixels)],
                     bufferedPixels: [],
                 });
+
+                this.removeStorage();
         
                 // After two minutes the canvas has most likely already been updated so we remove the pixels
                 setTimeout(() => {
@@ -111,6 +119,26 @@ class App extends React.Component {
                 $("#hash-success").html(`<p>Failure on computing transaction</p>`);
             }
         );
+    }
+
+    removeStorage() {
+        window.sessionStorage.removeItem("pixels");
+    }
+
+    updateStorage() {
+        window.sessionStorage.setItem("pixels", JSON.stringify(this.state.bufferedPixels));
+    }
+
+    getStorage() {
+        return JSON.parse(window.sessionStorage.getItem("pixels"));
+    }
+
+    removeAll = () => {
+        this.setState({
+            bufferedPixels: {},
+        })
+
+        this.removeStorage();
     }
 
     render() {
@@ -131,7 +159,12 @@ class App extends React.Component {
                     </div>
 
                     <div className="col-lg-2">
-                        <SideBar pixels={Object.values(this.state.bufferedPixels)} handleSubmit={this.handleSubmit} removedPixel={this.removedPixel} />
+                        <SideBar 
+                            pixels={Object.values(this.state.bufferedPixels)} 
+                            handleSubmit={this.handleSubmit} 
+                            removedPixel={this.removedPixel} 
+                            removeAll={this.removeAll}
+                        />
                     </div>
 
                 </div>
@@ -153,6 +186,10 @@ class SideBar extends React.Component {
         this.props.removedPixel(key);
     }
 
+    removeAll = () => {
+        this.props.removeAll();
+    }
+
     render() {
         const numPixels = this.props.pixels.length;
 
@@ -167,6 +204,7 @@ class SideBar extends React.Component {
                 </div>
 
                 <button onClick={this.handleSubmit} type="button" className="btn btn-success" id="submitPixels">Submit Pixels</button>
+                <button onClick={this.removeAll} type="button" className="btn btn-danger btn-sm">Remove all pixels</button>
 
                 <div id="hash-success">Hash will appear here</div>
 
