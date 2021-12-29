@@ -1,5 +1,6 @@
 # etc
-static/images/canvas.png
+static/images/testnet.png
+static/images/mainnet.png
 
 # Logs
 logs

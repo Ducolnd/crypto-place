@@ -4,65 +4,120 @@ require('dotenv').config();
 const png = require('pngjs').PNG;
 const fs = require('fs');
 const axios = require('axios');
-const {createCanvas} = require('canvas');
+const { createCanvas } = require('canvas');
 
-const CanvasPath = "./static/images/canvas.png";
-const addr = process.env.WALLET_ADDR;
-const blockfrostKey = process.env.BLOCKFROST_KEY_TESTNET;
+const network = process.env.NETWORK;
 const metadataLabel = 982541024549416;
+const pixelCost = 0.1; // 0.1 ADA per pixel
+let canvasPath;
+let addr;
+let blockfrostKey;
+let apiPath;
 
-let processedHashes = [];
+if (network == "testnet") {
+    addr = process.env.WALLET_ADDR_TESTNET;
+    blockfrostKey = process.env.BLOCKFROST_KEY_TESTNET;
+    apiPath = "https://cardano-testnet.blockfrost.io/api/v0";
+    canvasPath = "./static/images/canvas.png";
+} else if (network == "mainnet") {
+    apiPath = "https://cardano-mainnet.blockfrost.io/api/v0"
+    addr = process.env.WALLET_ADDR_MAINNET;
+    blockfrostKey = process.env.BLOCKFROST_KEY_MAINNET;
+    canvasPath = "./static/images/mainnet.png";
+} else {
+    console.error("Incorrect .env arguments!");
+}
+
 
 const requestHeaders = {
     project_id: blockfrostKey,
 }
 
 let addrUri = (addr) => {
-    return `https://cardano-testnet.blockfrost.io/api/v0/addresses/${addr}/transactions`
+    return `${apiPath}/addresses/${addr}/transactions`
 }
 
 let metaUri = (id) => {
-    return `https://cardano-testnet.blockfrost.io/api/v0/metadata/txs/labels/${id}`
+    return `${apiPath}/metadata/txs/labels/${id}`
 }
 
-async function queryMetadata(done) {
+let utxoUri = (id) => {
+    return `${apiPath}/txs/${id}/utxos`
+}
+
+let processedHashes = [];
+
+function queryMetadata() {
     let hashes = [];
     let metadata = [];
 
     // Confirm the transaction is actually ours
-    axios.get(addrUri(addr), {headers: requestHeaders, params: {order: "desc"}}).then(res => {
-        for (transaction of res.data) {
-            if (processedHashes.includes(transaction.tx_hash)) {
-                break;
+    return new Promise((resolve, reject) => {
+        axios.get(addrUri(addr), { headers: requestHeaders, params: { order: "desc", from: 3191421} }).then(res => {
+            for (let transaction of res.data) {
+                if (processedHashes.includes(transaction.tx_hash)) {
+                    break;
+                }
+
+                hashes.push(transaction.tx_hash);
             }
 
-            hashes.push(transaction.tx_hash);
-        }
+            // Update for next time
+            processedHashes = [...processedHashes, ...hashes.slice()];
 
-        processedHashes = [...processedHashes, ...hashes.slice()];
+            if (hashes.length > 0) {
+                // Get all metadata in network with label = metadataLabel
+                axios.get(metaUri(metadataLabel), { headers: requestHeaders, params: { order: "desc" } }).then(res => {
 
-        if (hashes.length > 0) {
-            // Get metadata
-            axios.get(metaUri(metadataLabel), {headers: requestHeaders, params: {order: "desc"}}).then(res => {
-                for (tx of res.data) {
-                    if (hashes.includes(tx.tx_hash) && tx.json_metadata != null) {
-                        let format = formatMetadata(tx.json_metadata.pixels);
-                        
-                        if (format != null) {
-                            metadata.push(format);
-                        }
-                    }
-                }
-    
-                // return
-                done(metadata.reverse());
-            }).catch(err => {
-                console.log("failed", err);
-            })
-        }
-        
-    }).catch(err => {
-        console.log("failed", err)
+                    let sequence = Promise.resolve();
+
+                    res.data.forEach(tx => {
+                        sequence = sequence.then(async () => {
+                            if (hashes.includes(tx.tx_hash) && tx.json_metadata != null) {
+                                let format = formatMetadata(tx.json_metadata.pixels);
+
+                                // Something went wrong in formatting metadata, it was probably wrong
+                                if (format != null) {
+                                    // Check if enough ada was sent
+                                    await axios.get(utxoUri(tx.tx_hash), { headers: requestHeaders }).then(res => {
+
+                                        for (let output of res.data.outputs) {
+                                            if (output.address == addr) {
+
+                                                let transactionAmount = (output.amount[0].quantity / 1000000) + 0.01; // Provide a little room to breath
+
+                                                if ((format.length * pixelCost) > (transactionAmount)) {
+                                                    console.log("Transaction was not sufficiently funded: ", format.length * pixelCost, transactionAmount);
+                                                } else {
+                                                    console.log("adding", Date.now());
+                                                    metadata.push(format);
+                                                }
+
+                                            }
+                                        }
+
+                                    }).catch(err => {
+                                        console.log("Error", err);
+                                    })
+                                }
+                            }
+                        });
+                    })
+
+                    sequence.then(() => {
+                        resolve(metadata.reverse());
+                    })
+
+                    // return
+                    return metadata.reverse();
+                }).catch(err => {
+                    console.log("failed", err);
+                })
+            }
+
+        }).catch(err => {
+            console.log("failed", err)
+        })
     })
 }
 
@@ -90,15 +145,15 @@ function formatMetadata(data) {
 
 // Update canvas file with new pixels
 function updateCanvas(withPixels) {
-    if (!fs.existsSync("static/images/canvas.png")) {
+    if (!fs.existsSync(canvasPath)) {
         const canvas = createCanvas(100, 100);
         canvas.getContext("2d").fillStyle = "white"
-        canvas.getContext("2d").fillRect(0,0,100,100);
+        canvas.getContext("2d").fillRect(0, 0, 100, 100);
 
-        fs.writeFileSync(CanvasPath, canvas.toBuffer("image/png"));
+        fs.writeFileSync(canvasPath, canvas.toBuffer("image/png"));
     }
-    
-    fs.createReadStream(CanvasPath)
+
+    fs.createReadStream(canvasPath)
         .pipe(new png())
         .on("parsed", function () {
             try {
@@ -117,7 +172,7 @@ function updateCanvas(withPixels) {
             }
 
             this.pack()
-                .pipe(fs.createWriteStream("static/images/canvas.png"))
+                .pipe(fs.createWriteStream(canvasPath))
                 .on("finish", function () {
                     console.log("Wrote", withPixels.length, "transactions");
                 });
@@ -129,12 +184,10 @@ function idx(x, y, width) {
     return (width * y + x) << 2;
 }
 
-function get() {
-    queryMetadata(res => {
-        if (res.length > 0) {
-            updateCanvas(res);
-        }
-    })
+async function get() {
+    let res = await queryMetadata();
+
+    updateCanvas(res);
 }
 
 get();
