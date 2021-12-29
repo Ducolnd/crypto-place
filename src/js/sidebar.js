@@ -88,8 +88,9 @@ class App extends React.Component {
         let pixels = this.state.bufferedPixels;
 
         // Perform a couple of checks
-        let numPixels = pixels.length
-        if (numPixels == 0 || numPixels >= 100) {
+        let numPixels = Object.values(pixels).length;
+        if (numPixels == 0 || numPixels > 100) {
+            $("#hash-success").html(`<p>You must submit at least 1 pixel or at most 100</p>`);
             return;
         }
 
@@ -115,7 +116,7 @@ class App extends React.Component {
                 },  2 * 60 * 1000);
             },
             failure => {
-                console.log("Failure on computing transactoin:", failure);
+                console.log("Failure on computing transaction:", failure);
                 $("#hash-success").html(`<p>Failure on computing transaction</p>`);
             }
         );

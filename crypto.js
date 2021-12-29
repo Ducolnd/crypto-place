@@ -18,7 +18,7 @@ if (network == "testnet") {
     addr = process.env.WALLET_ADDR_TESTNET;
     blockfrostKey = process.env.BLOCKFROST_KEY_TESTNET;
     apiPath = "https://cardano-testnet.blockfrost.io/api/v0";
-    canvasPath = "./static/images/canvas.png";
+    canvasPath = "./static/images/testnet.png";
 } else if (network == "mainnet") {
     apiPath = "https://cardano-mainnet.blockfrost.io/api/v0"
     addr = process.env.WALLET_ADDR_MAINNET;

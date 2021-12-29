@@ -10,7 +10,7 @@ export const colors = [
     [214, 36, 17],
     [255, 132, 38],
     [255, 209, 0],
-    [250, 253, 255],
+    [255, 255, 255],
     [255, 128, 164],
     [255, 38, 116],
     [148, 33, 106],
@@ -28,7 +28,7 @@ export const colors = [
 class CanvasImage extends React.Component {
     state = {
         image: null,
-        src: "images/canvas.png",
+        src: process.env.NETWORK == "testnet" ? "/images/testnet.png" : "/images/mainnet.png",
     };
 
     componentDidMount() {
@@ -61,8 +61,6 @@ class CanvasImage extends React.Component {
                 ref={node => {
                     this.imageNode = node;
                 }}
-                stroke="black"
-                strokeWidth={1}
             />
         );
     }
@@ -109,9 +107,9 @@ export class Canvas extends React.Component {
 
             let shape = e.target;
             let pos = shape.getRelativePointerPosition();
-            
+
             let key = `${Math.floor(pos.x)}${Math.floor(pos.y)}`;
-            
+
             if (!this.pos.includes(key)) {
                 this.state.newPixelCallback(pos);
                 this.pos.push(`${Math.floor(pos.x)}${Math.floor(pos.y)}`);
@@ -119,7 +117,7 @@ export class Canvas extends React.Component {
         }
     }
 
-    onMove = (e) => {               
+    onMove = (e) => {
         if (!this.drawing) {
             return;
         }
@@ -128,7 +126,7 @@ export class Canvas extends React.Component {
         let pos = shape.getRelativePointerPosition();
 
         let key = `${Math.floor(pos.x)}${Math.floor(pos.y)}`;
-        
+
         if (!this.pos.includes(key)) {
             this.state.newPixelCallback(pos);
             this.pos.push(`${Math.floor(pos.x)}${Math.floor(pos.y)}`);
@@ -157,12 +155,19 @@ export class Canvas extends React.Component {
                 }}
             >
                 <Layer imageSmoothingEnabled={false}>
-                    <Group 
-                        draggable 
+                    <Group
+                        draggable
                         onMouseDown={this.onClick}
                         onMouseMove={this.onMove}
                         onMouseUp={this.onEnd}
                     >
+                        <Rect
+                            stroke="black"
+                            strokeWidth={1}
+                            width={100}
+                            height={100}
+                            listening={false}
+                        />
 
                         <CanvasImage />
 

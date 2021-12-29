@@ -4,7 +4,7 @@ const cardano = window.cardano;
 
 const wallet = await nami_lib.NamiWalletApi(
     cardano,
-    process.env.BLOCKFROST_KEY_TESTNET,
+    process.env.NETWORK == "testnet" ? process.env.BLOCKFROST_KEY_TESTNET : process.env.BLOCKFROST_KEY_MAINNET,
     wasm,
 )
 
@@ -23,7 +23,7 @@ function parsePixels(pixels) {
 // Send pixels to the 'server' aka cardano wallet.
 export async function sendPixels(pixels) {   
     return wallet.send({
-        address: process.env.WALLET_ADDR_TESTNET,
+        address: process.env.NETWORK == "testnet" ? process.env.WALLET_ADDR_TESTNET : process.env.WALLET_ADDR_MAINNET,
         amount: pixels.length * 0.1,
         metadata: {
             pixels: parsePixels(pixels),
