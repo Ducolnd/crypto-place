@@ -34,3 +34,7 @@ app.get('/data', (_, res) => {
 app.get('/wallet', (_, res) => {
     res.render("wallet");
 });
+
+app.get('/faq', (_, res) => {
+    res.render("faq")
+})

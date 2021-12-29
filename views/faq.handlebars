@@ -1,0 +1,40 @@
+<div class="container">
+    <h1 class="text-center">Additional frequently asked questions</h1>
+
+    <div class="accordion" id="accordionExample">
+
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button" type="button" data-mdb-toggle="collapse" data-mdb-target="#collapseOne"
+                    aria-expanded="true" aria-controls="collapseOne">
+                    I submitted pixels but they are not visible on another device
+                </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+                data-mdb-parent="#accordionExample">
+                <div class="accordion-body">
+                    It can take up to 2 minutes for transactions to fully propagate through the Cardano network. This means
+                    that it can take just as long for them to become visible on the website. Make sure you check the transaction
+                    hash on the <a href="https://explorer.cardano.org/en">Cardano blockchain explorer</a>. If it it not visible
+                    on the website, but it is visible on the explorer, something on the frontend might have gone wrong. Take up
+                    contact with one of the developers. But don't worry, your pixels are stored on the blockchain!
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingTwo">
+                <button class="accordion-button collapsed" type="button" data-mdb-toggle="collapse"
+                    data-mdb-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                    I found a bug in the website
+                </button>
+            </h2>
+            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                data-mdb-parent="#accordionExample">
+                <div class="accordion-body">
+                    Great! Send a message on the <a href="">Discord</a> channel or open an issue in the <a href="https://github.com/Ducolnd/crypto-place/issues">repository</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
