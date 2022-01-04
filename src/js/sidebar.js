@@ -204,7 +204,7 @@ class SideBar extends React.Component {
                     })}
                 </div>
 
-                <button onClick={this.handleSubmit} type="button" className="btn btn-success" id="submitPixels">Submit Pixels</button>
+                <button onClick={this.handleSubmit} type="button" className="btn btn-success" id="submitPixels">Submit Pixels</button><br></br>
                 <button onClick={this.removeAll} type="button" className="btn btn-danger btn-sm">Remove all pixels</button>
 
                 <div id="hash-success">Hash will appear here</div>
