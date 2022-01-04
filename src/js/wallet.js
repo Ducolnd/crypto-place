@@ -8,6 +8,8 @@ const wallet = await nami_lib.NamiWalletApi(
     wasm,
 )
 
+const walletMode = await wallet.getNetworkId();
+
 function parsePixels(pixels) {
     let better = [];
 
@@ -34,8 +36,13 @@ export async function sendPixels(pixels) {
 
 export function activateCardano() {
     wallet.enable().then(result => {
-        $("#connectBtn").text('Connected');
-        $("#connectBtn").attr('class', 'btn btn-success');
+        if ( walletMode.network == process.env.NETWORK ) {
+            $("#connectBtn").text('Connected');
+            $("#connectBtn").attr('class', 'btn btn-success');
+        } else {
+            $("#connectBtn").text(`Wallet not in ${process.env.NETWORK} mode!`);
+            $("#connectBtn").attr('class', 'btn btn-danger');
+        }
     }, 
     error => {
         $("#connectBtn").text('Attempting to connect with wallet...');

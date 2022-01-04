@@ -146,9 +146,9 @@ function formatMetadata(data) {
 // Update canvas file with new pixels
 function updateCanvas(withPixels) {
     if (!fs.existsSync(canvasPath)) {
-        const canvas = createCanvas(100, 100);
+        const canvas = createCanvas(1024, 1024);
         canvas.getContext("2d").fillStyle = "white"
-        canvas.getContext("2d").fillRect(0, 0, 100, 100);
+        canvas.getContext("2d").fillRect(0, 0, 1024, 1024);
 
         fs.writeFileSync(canvasPath, canvas.toBuffer("image/png"));
     }

@@ -164,8 +164,8 @@ export class Canvas extends React.Component {
                         <Rect
                             stroke="black"
                             strokeWidth={1}
-                            width={100}
-                            height={100}
+                            width={1024}
+                            height={1024}
                             listening={false}
                         />
 
