@@ -23,7 +23,7 @@ class App extends React.Component {
 
     newPixel = (pos) => {
         if (this.state.bufferedPixels.length > 100) {
-            return
+            return;
         }
 
         const pixel = {
@@ -33,6 +33,11 @@ class App extends React.Component {
             g: this.state.currentColor[1],
             b: this.state.currentColor[2],
         };
+
+        if (pixel.x < 0 || pixel.y < 0 || pixel.x > 1023 || pixel.y > 1023) {
+            return;
+        }
+        
         const key = `${Math.floor(pos.x)}${Math.floor(pos.y)}`; // Replace if already exists
         
         if (key in this.state.bufferedPixels) {

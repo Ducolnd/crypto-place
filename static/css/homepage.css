@@ -1,5 +1,14 @@
 #intro-example {
-    height: 250px;
+    height: 550px;
+    background-image: url("/images/rplace.jpg");
+    background-size: cover;
+    image-rendering: pixelated;
+}
+
+#intro-example div {
+    padding: 15px;
+    border-radius: 10px;
+    background-color: rgba(0,0,0,0.6);
 }
 
 .card .bg-image  {
