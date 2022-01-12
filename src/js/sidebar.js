@@ -18,6 +18,8 @@ class App extends React.Component {
             bufferedPixels: (storage === null) ? {} : storage,
             retainPixels: [], // Keep on showing submitted pixels for a while
             transaction: {},
+            pos: {},
+            zoom: 2,
         }
     }
 
@@ -72,7 +74,11 @@ class App extends React.Component {
         
         this.setState({
             currentColor: color,
-        })
+        });
+    }
+
+    newData =  (data) => {
+        this.setState(data);
     }
 
     removedPixel = (index) => {
@@ -159,7 +165,11 @@ class App extends React.Component {
                     <div className="col-lg-7">
                         <div id="pageMain">
                             <div id="cryptoContainer">
-                                <Canvas pixels={[...this.state.retainPixels, ...Object.values(this.state.bufferedPixels)]} newPixel={this.newPixel} />
+                                <Canvas 
+                                    pixels={[...this.state.retainPixels, ...Object.values(this.state.bufferedPixels)]} 
+                                    newPixel={this.newPixel} 
+                                    newData={this.newData}
+                                />
                             </div>
                         </div>
                     </div>
@@ -167,6 +177,9 @@ class App extends React.Component {
                     <div className="col-lg-2">
                         <SideBar 
                             pixels={Object.values(this.state.bufferedPixels)} 
+                            zoom={this.state.zoom}
+                            pos={this.state.pos}
+                            
                             handleSubmit={this.handleSubmit} 
                             removedPixel={this.removedPixel} 
                             removeAll={this.removeAll}
@@ -214,16 +227,14 @@ class SideBar extends React.Component {
 
                 <div id="hash-success">Hash will appear here</div>
 
-                {/* <div id="pixelInfo">
+                <div id="pixelInfo">
                     <p id="pixelInfoText">
                         Mousepos:
-                        x <span id="mousex"></span>
-                        y <span id="mousey"></span>
-                        Zoom: <span id="zoom"></span>
+                        x <span id="mousex">{Math.floor(this.props.pos.x)}</span>
+                        y <span id="mousey">{Math.floor(this.props.pos.y)}</span>
+                        Zoom: <span id="zoom">{this.props.zoom.toFixed(2)}</span>
                     </p>
-                    <p>Pixel placed by: <span id="pixelPlacedBy"></span></p>
-                    <p>Pixel history</p>
-                </div> */}
+                </div>
             </div>
         )
     }

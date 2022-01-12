@@ -74,11 +74,12 @@ export class Canvas extends React.Component {
         this.pos = [];
 
         this.state = {
-            stageScale: 4,
+            stageScale: 2,
             stageX: 0,
             stageY: 0,
             relativePos: {},
             newPixelCallback: props.newPixel,
+            newDataCallback: props.newData,
         }
     }
 
@@ -98,6 +99,8 @@ export class Canvas extends React.Component {
             stageX: -(mousePointTo.x - stage.getPointerPosition().x / newScale) * newScale,
             stageY: -(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale
         });
+
+        this.state.newDataCallback({zoom: newScale});
     }
 
     onClick = (e) => {
@@ -118,12 +121,15 @@ export class Canvas extends React.Component {
     }
 
     onMove = (e) => {
+        let shape = e.target;
+        let pos = shape.getRelativePointerPosition();
+
+        this.state.newDataCallback({pos: pos});
+        
         if (!this.drawing) {
             return;
         }
 
-        let shape = e.target;
-        let pos = shape.getRelativePointerPosition();
 
         let key = `${Math.floor(pos.x)}${Math.floor(pos.y)}`;
 
