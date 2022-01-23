@@ -11,10 +11,11 @@ Any help would be greatly appreciated. To start contributing, simply `fork` the 
 
 1. Git `clone` the repository
 2. Run `npm i` to install all dependencies
-3. Next you will need to have a [`cardano-node`](https://developers.cardano.org/docs/get-started/installing-cardano-node) and [`cardano-wallet`](https://developers.cardano.org/docs/get-started/installing-cardano-wallet) running on your machine.
-4. Create a `.env` file and edit it with your wallet address and wallet-id (cardano-wallet)
-5. Build the javascript using `npm run build`
-6. Run the express server using `npm start` or `node server.js`
+3. Install all dependencies for nodejs Canvas using `sudo apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev`
+4. Next you will need to create a [`Blockfrost`](https://developers.cardano.org/docs/get-started/installing-cardano-node) api key. This is for query the blockchain for transaction data
+5. Create a `.env` file and edit it with your wallet address and Blockfrost api keys (testnet or mainnet)
+6. Build all javascript files using `npm run build`
+7. Run the express server using `npm start` or `node server.js`
 
 ### Things to work on
 

@@ -230,9 +230,9 @@ class SideBar extends React.Component {
                 <div id="pixelInfo">
                     <p id="pixelInfoText">
                         Mousepos:
-                        x <span id="mousex">{Math.floor(this.props.pos.x)}</span>
-                        y <span id="mousey">{Math.floor(this.props.pos.y)}</span>
-                        Zoom: <span id="zoom">{this.props.zoom.toFixed(2)}</span>
+                        x <span id="mousex">{Math.floor(this.props.pos.x)} </span>
+                        y <span id="mousey">{Math.floor(this.props.pos.y)} </span>
+                        Zoom: <span id="zoom">{this.props.zoom.toFixed(2)} </span>
                     </p>
                 </div>
             </div>
