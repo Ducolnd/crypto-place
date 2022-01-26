@@ -40,8 +40,6 @@ export function activateCardano() {
         $("#connectBtn").attr('class', 'btn btn-danger');
         return;
     }
-
-    cardano.enable();
     
     wallet.enable().then(result => {
         wallet.getNetworkId().then(mode => {
