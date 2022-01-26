@@ -2,13 +2,12 @@ const wasm = await import("@emurgo/cardano-serialization-lib-browser/cardano_ser
 const nami_lib = await import("nami-wallet-api");
 const cardano = window.cardano;
 
+let walletMode = "";
 const wallet = await nami_lib.NamiWalletApi(
     cardano,
     process.env.NETWORK == "testnet" ? process.env.BLOCKFROST_KEY_TESTNET : process.env.BLOCKFROST_KEY_MAINNET,
     wasm,
 )
-
-const walletMode = await wallet.getNetworkId();
 
 function parsePixels(pixels) {
     let better = [];
@@ -35,14 +34,29 @@ export async function sendPixels(pixels) {
 }
 
 export function activateCardano() {
+
+    if (cardano == undefined) {
+        $("#connectBtn").text('Failed to connect with Nami Wallet');
+        $("#connectBtn").attr('class', 'btn btn-danger');
+        return;
+    }
+
+    cardano.enable();
+    
     wallet.enable().then(result => {
-        if ( walletMode.network == process.env.NETWORK ) {
-            $("#connectBtn").text('Connected');
-            $("#connectBtn").attr('class', 'btn btn-success');
-        } else {
-            $("#connectBtn").text(`Wallet not in ${process.env.NETWORK} mode!`);
-            $("#connectBtn").attr('class', 'btn btn-danger');
-        }
+        wallet.getNetworkId().then(mode => {
+            walletMode = mode;
+
+            console.log("Attempting to connect");
+            if ( walletMode.network == process.env.NETWORK ) {
+                $("#connectBtn").text('Connected');
+                $("#connectBtn").attr('class', 'btn btn-success');
+            } else {
+                $("#connectBtn").text(`Wallet not in ${process.env.NETWORK} mode!`);
+                $("#connectBtn").attr('class', 'btn btn-danger');
+            }
+        });
+
     }, 
     error => {
         $("#connectBtn").text('Attempting to connect with wallet...');
