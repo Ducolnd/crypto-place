@@ -4,6 +4,16 @@ import { Canvas, colors } from "./canvas";
 import React from "react";
 import { render } from 'react-dom';
 
+let explorerUrl;
+
+if (process.env.NETWORK == "testnet") {
+    explorerUrl = 'https://explorer.cardano-testnet.iohkdev.io/en/transaction?id=';
+} else {
+    explorerUrl = 'https://explorer.cardano.org/en/transaction?id=';
+}
+
+console.log()
+
 // React Components
 
 class App extends React.Component {
@@ -109,7 +119,7 @@ class App extends React.Component {
         sendPixels(Object.values(pixels)).then(
             hash => {
                 console.log("The transaction was successful!", hash);
-                $("#hash-success").html(`<p style="overflow-wrap: break-word;">The transaction was successful!: <a target="_blank" href=${'https://explorer.cardano-testnet.iohkdev.io/en/transaction?id=' + hash}>${hash}</a></p>`);
+                $("#hash-success").html(`<p style="overflow-wrap: break-word;">The transaction was successful!: <a target="_blank" href=${explorerUrl + hash}>${hash}</a></p>`);
 
                 // Remove pixels from sidebar and update retainpixels
                 this.setState({
