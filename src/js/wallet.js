@@ -1,13 +1,14 @@
 const wasm = await import("@emurgo/cardano-serialization-lib-browser/cardano_serialization_lib.js");
-const nami_lib = await import("nami-wallet-api");
-const cardano = window.cardano;
+import { Wallet }  from "./wallet-api/main";
 
 let walletMode = "";
-const wallet = await nami_lib.NamiWalletApi(
-    cardano,
+const wallet = new Wallet(
+    window.cardano,
     process.env.NETWORK == "testnet" ? process.env.BLOCKFROST_KEY_TESTNET : process.env.BLOCKFROST_KEY_MAINNET,
     wasm,
-)
+);
+
+await wallet.enable();
 
 function parsePixels(pixels) {
     let better = [];
@@ -22,7 +23,9 @@ function parsePixels(pixels) {
 }
 
 // Send pixels to the 'server' aka cardano wallet.
-export async function sendPixels(pixels) {   
+export async function sendPixels(pixels) {
+    if (!wallet.isConnected()) return
+       
     return wallet.send({
         address: process.env.NETWORK == "testnet" ? process.env.WALLET_ADDR_TESTNET : process.env.WALLET_ADDR_MAINNET,
         amount: pixels.length * 0.1,
@@ -35,18 +38,15 @@ export async function sendPixels(pixels) {
 
 export function activateCardano() {
 
-    if (cardano == undefined) {
-        $("#connectBtn").text('Failed to connect with Nami Wallet');
+    if (!wallet.isInstalled()) {
+        $("#connectBtn").html('Failed to connect with wallet. <a href="/faq">Help</a>');
         $("#connectBtn").attr('class', 'btn btn-danger');
         return;
     }
     
-    wallet.enable().then(result => {
+    if (wallet.isConnected()) {
         wallet.getNetworkId().then(mode => {
-            walletMode = mode;
-
-            console.log("Attempting to connect");
-            if ( walletMode.network == process.env.NETWORK ) {
+            if ( mode.network == process.env.NETWORK ) {
                 $("#connectBtn").text('Connected');
                 $("#connectBtn").attr('class', 'btn btn-success');
             } else {
@@ -54,9 +54,9 @@ export function activateCardano() {
                 $("#connectBtn").attr('class', 'btn btn-danger');
             }
         });
+    }
 
-    }, 
-    error => {
+    else {
         $("#connectBtn").text('Attempting to connect with wallet...');
         $("#connectBtn").attr('class', 'btn btn-info');
 
@@ -64,5 +64,5 @@ export function activateCardano() {
             $("#connectBtn").text('Failed to connect with Nami Wallet');
             $("#connectBtn").attr('class', 'btn btn-danger');
         }, 500)
-    })
+    }
 }
