@@ -4,7 +4,6 @@ const Dotenv = require('dotenv-webpack');
 module.exports = {
     entry: {
         canvas: "./src/js/sidebar.js",
-        wallet: "./src/js/wallet-api/use.js"
     },
     output: {
         path: path.resolve(__dirname, "static", 'dist'),

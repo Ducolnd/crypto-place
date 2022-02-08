@@ -13,6 +13,25 @@
     display: block;
 }
 
+#supported .wallets {
+    width: 500px;
+    margin: 0 auto;
+}
+
+#supported  .wallet img {
+    width: 75px;
+    display: block;
+    margin: 0 auto;
+}
+
+#supported a {
+    color: black;
+}
+
+#how {
+    margin-top: 70px;
+}
+
 .card .bg-image  {
     height: 240px;
 }

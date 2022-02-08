@@ -1,22 +1,43 @@
 <div class="container">
-    <h1 class="text-center">Additional frequently asked questions</h1>
+    <h1 class="text-center">Frequently asked questions</h1>
 
     <div class="accordion" id="faq">
 
         <div class="accordion-item">
+            <h2 class="accordion-header" id="headingzero">
+                <button class="accordion-button collapsed" type="button" data-mdb-toggle="collapse"
+                    data-mdb-target="#collapsezero" aria-expanded="true" aria-controls="collapsezero">
+                    Why does it say: 'Failed to connect with wallet' at the top of the screen?
+                </button>
+            </h2>
+            <div id="collapsezero" class="accordion-collapse collapse" aria-labelledby="headingzero"
+                data-mdb-parent="#faq">
+                <div class="accordion-body">
+                    Most of the time this means you still need to install the wallet browser extension. Make sure you
+                    have actually installed the extension, and try again. If it still does not work, try finding help on
+                    the Discord.
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
             <h2 class="accordion-header" id="headingOne">
-                <button class="accordion-button" type="button" data-mdb-toggle="collapse" data-mdb-target="#collapseOne"
-                    aria-expanded="true" aria-controls="collapseOne">
+                <button class="accordion-button" aria-expanded="false" type="button" data-mdb-toggle="collapse" data-mdb-target="#collapseOne"
+                    aria-controls="collapseOne">
                     I submitted pixels but they are not visible on another device
                 </button>
             </h2>
             <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
                 data-mdb-parent="#faq">
                 <div class="accordion-body">
-                    It can take up to 2 minutes for transactions to fully propagate through the Cardano network. This means
-                    that it can take just as long for them to become visible on the website. Make sure you check the transaction
-                    hash on the <a href="https://explorer.cardano.org/en">Cardano blockchain explorer</a>. If it it not visible
-                    on the website, but it is visible on the explorer, something on the frontend might have gone wrong. Take up
+                    It can take up to 2 minutes for transactions to fully propagate through the Cardano network. This
+                    means
+                    that it can take just as long for them to become visible on the website. Make sure you check the
+                    transaction
+                    hash on the <a href="https://explorer.cardano.org/en">Cardano blockchain explorer</a>. If it it not
+                    visible
+                    on the website, but it is visible on the explorer, something on the frontend might have gone wrong.
+                    Take up
                     contact with one of the developers. But don't worry, your pixels are stored on the blockchain!
                 </div>
             </div>
@@ -32,7 +53,8 @@
             <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
                 data-mdb-parent="#faq">
                 <div class="accordion-body">
-                    Great! Send a message on the <a href="">Discord</a> channel or open an issue in the <a href="https://github.com/Ducolnd/crypto-place/issues">repository</a>
+                    Great! Send a message on the <a href="">Discord</a> channel or open an issue in the <a
+                        href="https://github.com/Ducolnd/crypto-place/issues">repository</a>
                 </div>
             </div>
         </div>
@@ -41,14 +63,14 @@
             <h2 class="accordion-header" id="whywallet">
                 <button class="accordion-button collapsed" type="button" data-mdb-toggle="collapse"
                     data-mdb-target="#collapse-wallet" aria-expanded="false" aria-controls="collapse-wallet">
-                    Why is Nami wallet the only wallet supported?
+                    Why are only 3 wallets supported?
                 </button>
             </h2>
             <div id="collapse-wallet" class="accordion-collapse collapse" aria-labelledby="whywallet"
                 data-mdb-parent="#faq">
                 <div class="accordion-body">
-                    As of right now, nami wallet is the only wallet providing the functionality required for this app. That is, signing transactions etc.
-                    Other wallets such as Yoroi will be supported as soon as it is possible!
+                    Not all browser extension wallets have DApp functionality. If you think your favorite wallet is
+                    missing, send a message in the Discord server.
                 </div>
             </div>
         </div>
