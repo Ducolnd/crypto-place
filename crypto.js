@@ -53,7 +53,7 @@ function queryMetadata() {
 
     // Confirm the transaction is actually ours
     return new Promise((resolve, reject) => {
-        axios.get(addrUri(addr), { headers: requestHeaders, params: { order: "desc", from: 3191421} }).then(res => {
+        axios.get(addrUri(addr), { headers: requestHeaders, params: { order: "desc", from: 3191421 } }).then(res => {
             for (let transaction of res.data) {
                 if (processedHashes.includes(transaction.tx_hash)) {
                     break;
@@ -179,6 +179,36 @@ function updateCanvas(withPixels) {
         });
 }
 
+async function getProtocolParameter() {
+    let latestBlock = (await blockfrostRequest("/blocks/latest")).data;
+    if (!latestBlock) throw "ERROR.FAILED_PROTOCOL_PARAMETER";
+
+    let p = (await blockfrostRequest(`/epochs/${latestBlock.epoch}/parameters`)).data;
+    if (!p) throw "ERROR.FAILED_PROTOCOL_PARAMETER";
+
+    return {
+        linearFee: {
+            minFeeA: p.min_fee_a.toString(),
+            minFeeB: p.min_fee_b.toString(),
+        },
+        minUtxo: '1000000', //p.min_utxo, minUTxOValue protocol paramter has been removed since Alonzo HF. Calulation of minADA works differently now, but 1 minADA still sufficient for now
+        poolDeposit: p.pool_deposit,
+        keyDeposit: p.key_deposit,
+        maxTxSize: p.max_tx_size,
+        slot: latestBlock.slot,
+    };
+}
+
+async function blockfrostRequest(endpoint) {
+    try {
+        return await axios.get(`${apiPath}${endpoint}`, {
+            headers: requestHeaders,
+        });
+    } catch (err) {
+        console.log("error", err);
+    }
+}
+
 // Get index from coordinate
 function idx(x, y, width) {
     return (width * y + x) << 2;
@@ -193,4 +223,15 @@ async function get() {
 get();
 setInterval(() => {
     get();
-}, 10000)
+}, 10000);
+
+// Update protocol parameters every 10 minutes
+setInterval(() => {
+    getProtocolParameter().then((params) => {
+        console.log(params);
+        fs.writeFile("protocolparams.json", JSON.stringify(params), (err) => {
+            if (err) throw err;
+            console.log("Updated protocol parameters");
+        })
+    });
+}, 10 * 60 * 1000);

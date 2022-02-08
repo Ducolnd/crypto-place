@@ -50,30 +50,27 @@ const ERROR = {
 export class Wallet {
     S: any;
     CoinSelection = CoinSelection;
-    blockfrostApiKey: any;
 
     walletFull: any;
     walletInitial: any;
 
-    constructor(cardano: any, blockfrostApiKey: string, serializationLib?: any) {
-        this.blockfrostApiKey = blockfrostApiKey;
-
+    constructor(cardano: any, serializationLib?: any) {
         if (cardano) {
-            this.walletInitial = 
+            this.walletInitial =
                 cardano[SupportedWallets[0]] || // Flint
                 cardano[SupportedWallets[1]] || // Nami
                 cardano[SupportedWallets[2]] || // CCvault
                 undefined;                      // No supported wallet
         }
-            
+
         this.S = serializationLib;
     }
-    
+
     isConnected(): boolean {
-        if ( this.walletFull ) return true
+        if (this.walletFull) return true
         else return false
     }
-    
+
     isInstalled(): boolean {
         if (this.walletInitial) return true
         else return false
@@ -87,7 +84,7 @@ export class Wallet {
 
     async enable(): Promise<void> {
         if (!this.isInstalled()) return
-        
+
         return this.walletInitial.enable().then(((full: any) => {
             this.walletFull = full;
         })).catch((err: any) => {
@@ -281,66 +278,6 @@ export class Wallet {
         })
 
         return await this._signSubmitTx(RawTransaction)
-    }
-
-    async delegate({ poolId, metadata = null, metadataLabel = '721' }: Delegate): Promise<string> {
-        let protocolParameter = await this._getProtocolParameter()
-
-        let stakeKeyHash = this.S.RewardAddress.from_address(
-            this.S.Address.from_bytes(
-                Buffer.from(
-                    await this.getRewardAddressHex(),
-                    'hex'
-                )
-            )
-        ).payment_cred().to_keyhash().to_bytes()
-
-        let delegation = await getDelegation(await this.getRewardAddress())
-
-        async function getDelegation(rewardAddr: string): Promise<any> {
-            let stake = await this._blockfrostRequest(`/accounts/${rewardAddr}`)
-            if (!stake || stake.error || !stake.pool_id) return {}
-
-            return {
-                active: stake.active,
-                rewards: stake.withdrawable_amount,
-                poolId: stake.pool_id,
-            }
-        }
-
-        let pool = await this._blockfrostRequest(`/pools/${poolId}`)
-        let poolHex = pool.hex
-
-        let utxos = (await this.getUtxosHex()).map(u => this.S.TransactionUnspentOutput.from_bytes(Buffer.from(u, 'hex')))
-        let PaymentAddress = await this.getAddress()
-
-        let outputs = this.S.ransactionOutputs.new()
-        outputs.add(
-            this.S.TransactionOutput.new(
-                this.S.Address.from_bech32(PaymentAddress),
-                this.S.Value.new(
-                    this.S.BigNum.from_str(protocolParameter.keyDeposit)
-                )
-            )
-        )
-
-        let transaction = this._txBuilder({
-            PaymentAddress,
-            Utxos: utxos,
-            ProtocolParameter: protocolParameter,
-            Outputs: outputs,
-            Delegation: {
-                poolHex: poolHex,
-                stakeKeyHash: stakeKeyHash,
-                delegation: delegation
-            },
-            Metadata: metadata,
-            MetadataLabel: metadataLabel
-        })
-
-        let txHash = await this._signSubmitTx(transaction)
-
-        return txHash
     }
 
     async signData(string: string): Promise<string> {
@@ -635,41 +572,10 @@ export class Wallet {
 
     }
 
-    async _getProtocolParameter() {
-        let latestBlock = await this._blockfrostRequest("/blocks/latest")
-        if (!latestBlock) throw ERROR.FAILED_PROTOCOL_PARAMETER
+    async _getProtocolParameter(): Promise<any> {
+        let data = await fetch("/protocolparams.json"); // first step
+        return await data.json()
 
-        let p = await this._blockfrostRequest(`/epochs/${latestBlock.epoch}/parameters`) //
-        if (!p) throw ERROR.FAILED_PROTOCOL_PARAMETER
-
-        return {
-            linearFee: {
-                minFeeA: p.min_fee_a.toString(),
-                minFeeB: p.min_fee_b.toString(),
-            },
-            minUtxo: '1000000', //p.min_utxo, minUTxOValue protocol paramter has been removed since Alonzo HF. Calulation of minADA works differently now, but 1 minADA still sufficient for now
-            poolDeposit: p.pool_deposit,
-            keyDeposit: p.key_deposit,
-            maxTxSize: p.max_tx_size,
-            slot: latestBlock.slot,
-        };
-
-    }
-    async _blockfrostRequest(endpoint: string): Promise<any> {
-        let networkId = await (await this.getNetworkId()).id
-        let networkEndpoint = networkId == 0 ?
-            'https://cardano-testnet.blockfrost.io/api/v0'
-            :
-            'https://cardano-mainnet.blockfrost.io/api/v0'
-        try {
-            return await (await fetch(`${networkEndpoint}${endpoint}`, {
-                headers: {
-                    project_id: this.blockfrostApiKey,
-                }
-            })).json()
-        } catch (error) {
-            return null
-        }
     }
 }
 

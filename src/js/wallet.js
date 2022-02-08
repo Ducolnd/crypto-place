@@ -4,7 +4,6 @@ import { Wallet }  from "./wallet-api/main";
 let walletMode = "";
 const wallet = new Wallet(
     window.cardano,
-    process.env.NETWORK == "testnet" ? process.env.BLOCKFROST_KEY_TESTNET : process.env.BLOCKFROST_KEY_MAINNET,
     wasm,
 );
 
