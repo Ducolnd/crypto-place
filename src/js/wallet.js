@@ -7,7 +7,7 @@ const wallet = new Wallet(
     wasm,
 );
 
-await wallet.enable();
+await wallet.checkConnect();
 
 function parsePixels(pixels) {
     let better = [];
@@ -35,10 +35,17 @@ export async function sendPixels(pixels) {
     })
 }
 
-export function activateCardano() {
+export async function enableCardano() {
+    await wallet.enable();
 
+    activateCardano();
+}
+
+export async function activateCardano() {
+
+    // No valid wallet has been installed
     if (!wallet.isInstalled()) {
-        $("#connectBtn").html('Failed to connect with wallet. <a href="/faq">Help</a>');
+        $("#connectBtn").html('No valid wallet installed. <a href="/faq">Help</a>');
         $("#connectBtn").attr('class', 'btn btn-danger');
         return;
     }
@@ -60,7 +67,7 @@ export function activateCardano() {
         $("#connectBtn").attr('class', 'btn btn-info');
 
         setTimeout(() => {
-            $("#connectBtn").text('Failed to connect with Nami Wallet');
+            $("#connectBtn").text('Wallet not yet authorized. Click to connect');
             $("#connectBtn").attr('class', 'btn btn-danger');
         }, 500)
     }

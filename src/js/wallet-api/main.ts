@@ -2,6 +2,7 @@
 
 import { MultiAsset, TransactionOutputs, TransactionUnspentOutput } from '@emurgo/cardano-serialization-lib-asmjs'
 import { Buffer } from 'buffer'
+import { HitCanvas } from 'konva/lib/Canvas';
 import CoinSelection from './coinSelection.js';
 
 type Delegate = {
@@ -57,7 +58,7 @@ export class Wallet {
     constructor(cardano: any, serializationLib?: any) {
         if (cardano) {
             this.walletInitial =
-                cardano[SupportedWallets[0]] || // Flint
+                // cardano[SupportedWallets[0]] || // Flint
                 cardano[SupportedWallets[1]] || // Nami
                 cardano[SupportedWallets[2]] || // CCvault
                 undefined;                      // No supported wallet
@@ -74,6 +75,13 @@ export class Wallet {
     isInstalled(): boolean {
         if (this.walletInitial) return true
         else return false
+    }
+
+    // If we have been previously authorized, we directly get the full api
+    async checkConnect():  Promise<any> {
+        if (await this.isEnabled()) {
+            await this.enable();
+        }
     }
 
     async isEnabled(): Promise<boolean> {
@@ -122,6 +130,8 @@ export class Wallet {
     }
 
     async getNetworkId(): Promise<{ id: number, network: string }> {
+        if (!this.isConnected()) return
+        
         let networkId = await this.walletFull.getNetworkId()
         return {
             id: networkId,

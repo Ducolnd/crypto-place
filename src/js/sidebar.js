@@ -1,4 +1,4 @@
-import { sendPixels, activateCardano } from "./wallet";
+import { sendPixels, enableCardano, activateCardano } from "./wallet";
 import { Canvas, colors } from "./canvas";
 
 import React from "react";
@@ -11,8 +11,6 @@ if (process.env.NETWORK == "testnet") {
 } else {
     explorerUrl = 'https://explorer.cardano.org/en/transaction?id=';
 }
-
-console.log()
 
 // React Components
 
@@ -307,7 +305,7 @@ $(document).ready(function () {
     // Activate Cardano
     activateCardano();
     $("#connectBtn").click(function () {
-        activateCardano();
+        enableCardano();
     });
 
     $("#pageMain").bind("wheel mousewheel", function(e) {e.preventDefault()});
