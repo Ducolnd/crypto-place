@@ -23,7 +23,7 @@ function parsePixels(pixels) {
 
 // Send pixels to the 'server' aka cardano wallet.
 export async function sendPixels(pixels) {
-    if (!wallet.isConnected()) return
+    if (!wallet.isConnected()) return Promise.reject("Wallet is not connected")
        
     return wallet.send({
         address: process.env.NETWORK == "testnet" ? process.env.WALLET_ADDR_TESTNET : process.env.WALLET_ADDR_MAINNET,

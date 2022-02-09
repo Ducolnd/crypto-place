@@ -47,30 +47,30 @@ class App extends React.Component {
         if (pixel.x < 0 || pixel.y < 0 || pixel.x > 1023 || pixel.y > 1023) {
             return;
         }
-        
+
         const key = `${Math.floor(pos.x)}${Math.floor(pos.y)}`; // Replace if already exists
-        
+
         if (key in this.state.bufferedPixels) {
             let p = this.state.bufferedPixels[key];
 
             // Remove pixel if color is same 
             if (p.r === pixel.r && p.g === pixel.g && p.b === pixel.b) {
-                let n = {...this.state.bufferedPixels};
+                let n = { ...this.state.bufferedPixels };
                 delete n[key];
 
                 this.setState({
-                    bufferedPixels: {...n},
+                    bufferedPixels: { ...n },
                 })
-                
+
             } else {
                 this.setState({
-                    bufferedPixels: {...this.state.bufferedPixels, [key]: pixel},
+                    bufferedPixels: { ...this.state.bufferedPixels, [key]: pixel },
                 })
             }
 
         } else {
             this.setState({
-                bufferedPixels: {...this.state.bufferedPixels, [key]: pixel},
+                bufferedPixels: { ...this.state.bufferedPixels, [key]: pixel },
             })
         }
 
@@ -79,13 +79,13 @@ class App extends React.Component {
 
     newColor = (index) => {
         let color = colors[index];
-        
+
         this.setState({
             currentColor: color,
         });
     }
 
-    newData =  (data) => {
+    newData = (data) => {
         this.setState(data);
     }
 
@@ -94,7 +94,7 @@ class App extends React.Component {
         let key = Object.keys(this.state.bufferedPixels)[index];
 
         delete another[key];
-        
+
         this.setState({
             bufferedPixels: another,
         });
@@ -114,8 +114,8 @@ class App extends React.Component {
         }
 
         // Construct the transaction with the pixels
-        sendPixels(Object.values(pixels)).then(
-            hash => {
+        sendPixels(Object.values(pixels))
+            .then(hash => {
                 console.log("The transaction was successful!", hash);
                 $("#hash-success").html(`<p style="overflow-wrap: break-word;">The transaction was successful!: <a target="_blank" href=${explorerUrl + hash}>${hash}</a></p>`);
 
@@ -126,19 +126,16 @@ class App extends React.Component {
                 });
 
                 this.removeStorage();
-        
+
                 // After two minutes the canvas has most likely already been updated so we remove the pixels
                 setTimeout(() => {
                     this.setState({
                         retainPixels: [],
                     })
-                },  2 * 60 * 1000);
-            },
-            failure => {
-                console.log("Failure on computing transaction:", failure);
-                $("#hash-success").html(`<p>Failure on computing transaction</p>`);
-            }
-        );
+                }, 2 * 60 * 1000);
+            }).catch(failure => {
+                $("#hash-success").html(`<p>Failure on computing transaction: <b>${failure}</b></p>`);
+            });
     }
 
     removeStorage() {
@@ -173,9 +170,9 @@ class App extends React.Component {
                     <div className="col-lg-7">
                         <div id="pageMain">
                             <div id="cryptoContainer">
-                                <Canvas 
-                                    pixels={[...this.state.retainPixels, ...Object.values(this.state.bufferedPixels)]} 
-                                    newPixel={this.newPixel} 
+                                <Canvas
+                                    pixels={[...this.state.retainPixels, ...Object.values(this.state.bufferedPixels)]}
+                                    newPixel={this.newPixel}
                                     newData={this.newData}
                                 />
                             </div>
@@ -183,13 +180,13 @@ class App extends React.Component {
                     </div>
 
                     <div className="col-lg-2">
-                        <SideBar 
-                            pixels={Object.values(this.state.bufferedPixels)} 
+                        <SideBar
+                            pixels={Object.values(this.state.bufferedPixels)}
                             zoom={this.state.zoom}
                             pos={this.state.pos}
-                            
-                            handleSubmit={this.handleSubmit} 
-                            removedPixel={this.removedPixel} 
+
+                            handleSubmit={this.handleSubmit}
+                            removedPixel={this.removedPixel}
                             removeAll={this.removeAll}
                         />
                     </div>
@@ -226,7 +223,7 @@ class SideBar extends React.Component {
                 <p id="pixelCounter">{numPixels} {numPixels > 100 && " - can't place more than 100 pixels!!"}</p>
                 <div id="bufferedPixels">
                     {this.props.pixels.map((pixel, i) => {
-                        return <div onClick={() => this.removedPixel(i)} key={i} className="pixelentry"><span style={{color: `rgb(${pixel.r},${pixel.g},${pixel.b})`}}>&#9632;</span>({pixel.x}, {pixel.y})</div>
+                        return <div onClick={() => this.removedPixel(i)} key={i} className="pixelentry"><span style={{ color: `rgb(${pixel.r},${pixel.g},${pixel.b})` }}>&#9632;</span>({pixel.x}, {pixel.y})</div>
                     })}
                 </div>
 
@@ -256,30 +253,30 @@ class ColorBox extends React.Component {
             selected: 0,
         }
     }
-    
+
     newColor = (index) => {
         this.setState({
             selected: index,
         });
         this.props.newColor(index);
     }
-    
+
     render() {
         return (
-                <div id="colors">
-                    <div><h1>Select Color</h1><p> (Click)</p></div>
-                    {this.props.colors.map((color, i) => {
-                        if (i === this.state.selected) {
-                            return (
-                                <div style={{border: "3px black solid", backgroundColor: rgb(color)}} onClick={() => this.newColor(i)} className="colorbox" key={i}></div>
-                            )
-                        } else {
-                            return (
-                                <div onClick={() => this.newColor(i)} className="colorbox" key={i} style={{ "backgroundColor": rgb(color) }}></div>
-                            )
-                        }
-                    })}
-                </div>
+            <div id="colors">
+                <div><h1>Select Color</h1><p> (Click)</p></div>
+                {this.props.colors.map((color, i) => {
+                    if (i === this.state.selected) {
+                        return (
+                            <div style={{ border: "3px black solid", backgroundColor: rgb(color) }} onClick={() => this.newColor(i)} className="colorbox" key={i}></div>
+                        )
+                    } else {
+                        return (
+                            <div onClick={() => this.newColor(i)} className="colorbox" key={i} style={{ "backgroundColor": rgb(color) }}></div>
+                        )
+                    }
+                })}
+            </div>
         )
     }
 }
@@ -308,5 +305,5 @@ $(document).ready(function () {
         enableCardano();
     });
 
-    $("#pageMain").bind("wheel mousewheel", function(e) {e.preventDefault()});
+    $("#pageMain").bind("wheel mousewheel", function (e) { e.preventDefault() });
 });
