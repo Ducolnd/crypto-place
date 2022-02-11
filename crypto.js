@@ -104,19 +104,24 @@ function queryMetadata() {
                         });
                     })
 
+                    // Return
                     sequence.then(() => {
                         resolve(metadata.reverse());
                     })
 
-                    // return
-                    return metadata.reverse();
                 }).catch(err => {
                     console.log("failed", err);
                 })
             }
 
+            // Catch address  request errors
         }).catch(err => {
-            console.log("failed", err)
+            if (err.response.data.message == "The requested component has not been found.")  {
+                console.log("Address has no transactions")
+                resolve([])
+            } else {
+                console.log("failed", err)
+            }
         })
     })
 }
