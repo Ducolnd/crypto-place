@@ -160,38 +160,51 @@ class App extends React.Component {
 
     render() {
         return (
-            <div className="container-fluid">
-                <div className="row">
+            <div>
+                <div className="container-fluid">
+                    <div className="row">
 
-                    <div className="col-lg-3">
-                        <ColorBox newColor={this.newColor} colors={colors} />
-                    </div>
+                        <div className="col-lg-3">
+                            <ColorBox newColor={this.newColor} colors={colors} />
+                        </div>
 
-                    <div className="col-lg-7">
-                        <div id="pageMain">
-                            <div id="cryptoContainer">
-                                <Canvas
-                                    pixels={[...this.state.retainPixels, ...Object.values(this.state.bufferedPixels)]}
-                                    newPixel={this.newPixel}
-                                    newData={this.newData}
-                                />
+                        <div className="col-lg-7">
+                            <div id="pageMain">
+                                <div id="cryptoContainer">
+                                    <Canvas
+                                        pixels={[...this.state.retainPixels, ...Object.values(this.state.bufferedPixels)]}
+                                        newPixel={this.newPixel}
+                                        newData={this.newData}
+                                    />
+                                </div>
                             </div>
                         </div>
+
+                        <div className="col-lg-2">
+                            <SideBar
+                                pixels={Object.values(this.state.bufferedPixels)}
+                                zoom={this.state.zoom}
+                                pos={this.state.pos}
+
+                                handleSubmit={this.handleSubmit}
+                                removedPixel={this.removedPixel}
+                                removeAll={this.removeAll}
+                            />
+                        </div>
+
                     </div>
-
-                    <div className="col-lg-2">
-                        <SideBar
-                            pixels={Object.values(this.state.bufferedPixels)}
-                            zoom={this.state.zoom}
-                            pos={this.state.pos}
-
-                            handleSubmit={this.handleSubmit}
-                            removedPixel={this.removedPixel}
-                            removeAll={this.removeAll}
-                        />
-                    </div>
-
                 </div>
+
+                <div className="container info">
+                    <p>
+                        Please note: the Cardano network is currently under heavy load due to the increasing number of Apps on Cardano. 
+                        This will have some consequences for Cryptoplace as well. For example, you might be faced with an error code due 
+                        to the previous transaction still being processed. Please retry again after a few minutes. It might also seem like after
+                        submitting a transaction nothing happens. This is also due to the network load. It might take longer than usual for transactions
+                        to get processed and appear on the Canvas.
+                    </p>
+                </div>
+
             </div>
         )
     }

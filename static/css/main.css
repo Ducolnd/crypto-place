@@ -85,3 +85,7 @@
     display: inline-block;
     cursor: pointer;
 }
+
+.info {
+    margin-top: 30px;
+}
