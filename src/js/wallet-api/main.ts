@@ -52,7 +52,7 @@ export class Wallet {
     constructor(cardano: any, serializationLib?: any) {
         if (cardano) {
             this.walletInitial =
-                // cardano[SupportedWallets[0]] || // Flint
+                cardano[SupportedWallets[0]] || // Flint
                 cardano[SupportedWallets[1]] || // Nami
                 cardano[SupportedWallets[2]] || // CCvault
                 undefined;                      // No supported wallet

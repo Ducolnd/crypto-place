@@ -236,6 +236,10 @@ class WalletStatus extends React.Component {
         }
     }
 
+    componentDidMount() {
+        setTimeout(() => {this.handleClick()}, 350)
+    }
+
     handleClick = () => {
         this.setState({
             text: "Connecting...",
@@ -260,7 +264,6 @@ class WalletStatus extends React.Component {
                         status: "success",
                     })
                 }
-    
             }).catch(err => {
                 console.log(err);
                 this.setState({
