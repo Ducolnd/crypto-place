@@ -27,8 +27,13 @@
     }
 }
 
+#dano {
+    float: right;
+}
+
 #icon {
     image-rendering: pixelated;
+    float: left;
 }
 
 #intro-example button {
