@@ -2,10 +2,33 @@
     margin-bottom: 100px;
 }
 
+#intro-example .text {
+    max-width: 65%;
+    min-width: 400px;
+    margin: 0 auto;
+}
+
+.images {
+    margin: 0 auto;
+    width: fit-content;
+}
+
 #intro-example img {
-    height: 300px;
-    margin: auto;
+    height: 340px;
+    margin: 0 auto;
     display: block;
+}
+
+@media all and (max-width: 749px) {
+    #intro-example img {
+        height: 175px;
+        margin: 0 auto;
+        display: block;
+    }
+}
+
+#icon {
+    image-rendering: pixelated;
 }
 
 #intro-example button {
