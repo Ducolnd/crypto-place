@@ -179,6 +179,7 @@ class App extends React.Component {
 
                         <div className="col-lg-3">
                             <ColorBox newColor={this.newColor} colors={colors} />
+                            <WalletStatus wallet={this.state.wallet}/>
                         </div>
 
                         <div className="col-lg-7">
@@ -226,8 +227,6 @@ class App extends React.Component {
 class WalletStatus extends React.Component {
     constructor(props) {
         super(props);
-
-        console.log(props.wallet.isConnected());
 
         this.state = {
             wallet: props.wallet,  

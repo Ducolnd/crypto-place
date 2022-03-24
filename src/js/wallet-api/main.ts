@@ -60,8 +60,6 @@ export class Wallet {
             this.walletInitial = undefined;
         }
 
-        console.log(this.walletInitial);
-
         this.S = serializationLib;
     }
 
