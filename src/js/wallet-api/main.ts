@@ -2,14 +2,7 @@
 
 import { MultiAsset, TransactionOutputs, TransactionUnspentOutput } from '@emurgo/cardano-serialization-lib-asmjs'
 import { Buffer } from 'buffer'
-import { HitCanvas } from 'konva/lib/Canvas';
 import CoinSelection from './coinSelection.js';
-
-type Delegate = {
-    poolId: string,
-    metadata?: any,
-    metadataLabel?: string
-}
 
 type Utxo = {
     txHash: string,
@@ -54,6 +47,7 @@ export class Wallet {
 
     walletFull: any;
     walletInitial: any;
+    walletNetwork: any;
 
     constructor(cardano: any, serializationLib?: any) {
         if (cardano) {
@@ -62,9 +56,21 @@ export class Wallet {
                 cardano[SupportedWallets[1]] || // Nami
                 cardano[SupportedWallets[2]] || // CCvault
                 undefined;                      // No supported wallet
+        } else {
+            this.walletInitial = undefined;
         }
 
+        console.log(this.walletInitial);
+
         this.S = serializationLib;
+    }
+
+    getWalletName(): String {
+        if (this.isInstalled()) {
+            return this.walletInitial.name;
+        }
+
+        return "null"
     }
 
     isConnected(): boolean {
@@ -73,19 +79,40 @@ export class Wallet {
     }
 
     isInstalled(): boolean {
-        if (this.walletInitial) return true
+        if (this.walletInitial != undefined) return true
         else return false
     }
 
+    async initWallet() {
+        await this.enable();
+        await this.getNetworkId();
+    }
+
+    // Send pixels to the 'server' aka cardano wallet.
+    async sendPixels(pixels: any): Promise<any> {
+        if (!this.isConnected()) return Promise.reject("Wallet is not connected")
+
+        return this.send({
+            address: process.env.NETWORK == "testnet" ? process.env.WALLET_ADDR_TESTNET : process.env.WALLET_ADDR_MAINNET,
+            amount: pixels.length * 0.1,
+            metadata: {
+                pixels: this._parsePixels(pixels),
+            },
+            metadataLabel: "982541024549416",
+        })
+    }
+
     // If we have been previously authorized, we directly get the full api
-    async checkConnect():  Promise<any> {
+    async checkConnect(): Promise<void> {
         if (await this.isEnabled()) {
             await this.enable();
+        } else {
+            console.log("not enabled")
         }
     }
 
     async isEnabled(): Promise<boolean> {
-        if (!this.isInstalled()) return
+        if (!this.isInstalled()) return false
 
         return await this.walletInitial.isEnabled()
     }
@@ -131,8 +158,11 @@ export class Wallet {
 
     async getNetworkId(): Promise<{ id: number, network: string }> {
         if (!this.isConnected()) return
-        
+
         let networkId = await this.walletFull.getNetworkId()
+
+        this.walletNetwork = networkId == 1 ? 'mainnet' : 'testnet'
+        
         return {
             id: networkId,
             network: networkId == 1 ? 'mainnet' : 'testnet'
@@ -303,6 +333,19 @@ export class Wallet {
     }
 
     //////////////////////////////////////////////////
+
+
+    _parsePixels(pixels: any) {
+        let better = [];
+
+        for (const pixel of pixels) {
+            better.push([
+                pixel.x, pixel.y, pixel.r, pixel.g, pixel.b
+            ])
+        }
+
+        return better
+    }
 
     _makeMultiAsset(assets: Asset[]): MultiAsset {
         let AssetsMap: any = {}

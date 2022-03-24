@@ -1,5 +1,7 @@
-import { sendPixels, enableCardano, activateCardano } from "./wallet";
+const wasm = await import("@emurgo/cardano-serialization-lib-browser/cardano_serialization_lib.js");
+
 import { Canvas, colors } from "./canvas";
+import { Wallet }  from "./wallet-api/main";
 
 import React from "react";
 import { render } from 'react-dom';
@@ -11,6 +13,12 @@ if (process.env.NETWORK == "testnet") {
 } else {
     explorerUrl = 'https://explorer.cardano.org/en/transaction?id=';
 }
+
+let mainWallet = new Wallet(
+    window.cardano,
+    wasm,
+);
+await mainWallet.checkConnect();
 
 // React Components
 
@@ -24,10 +32,11 @@ class App extends React.Component {
         this.state = {
             currentColor: [22, 23, 26],
             bufferedPixels: (storage === null) ? {} : storage,
-            retainPixels: [], // Keep on showing submitted pixels for a while
+            retainPixels: [], // Keep on sho  wing submitted pixels for a while
             transaction: {},
             pos: {},
             zoom: 2,
+            wallet: mainWallet,
         }
     }
 
@@ -114,7 +123,7 @@ class App extends React.Component {
         }
 
         // Construct the transaction with the pixels
-        sendPixels(Object.values(pixels))
+        this.state.wallet.sendPixels(Object.values(pixels))
             .then(hash => {
                 console.log("The transaction was successful!", hash);
                 $("#hash-success").html(`<p style="overflow-wrap: break-word;">The transaction was successful!: <a target="_blank" href=${explorerUrl + hash}>${hash}</a></p>`);
@@ -158,6 +167,10 @@ class App extends React.Component {
         this.removeStorage();
     }
 
+    handleWallet = () => {
+        this.state.wallet.initWallet()
+    }
+
     render() {
         return (
             <div className="container-fluid">
@@ -165,6 +178,7 @@ class App extends React.Component {
 
                     <div className="col-lg-3">
                         <ColorBox newColor={this.newColor} colors={colors} />
+                        <WalletStatus wallet={this.state.wallet} />
                     </div>
 
                     <div className="col-lg-7">
@@ -192,6 +206,70 @@ class App extends React.Component {
                     </div>
 
                 </div>
+            </div>
+        )
+    }
+}
+
+class WalletStatus extends React.Component {
+    constructor(props) {
+        super(props);
+
+        console.log(props.wallet.isConnected());
+
+        this.state = {
+            wallet: props.wallet,  
+
+            text: "Click to connect",
+            status: "info",
+        }
+    }
+
+    handleClick = () => {
+        this.setState({
+            text: "Connecting...",
+            status: "info",
+        });
+        setTimeout(() => {
+            this.props.wallet.initWallet().then(_ => {    
+                if (!this.props.wallet.isInstalled()) {
+                    this.setState({
+                        text: "No Wallet is installed! Nami, CCVault, Flint, etc.",
+                        status: "danger",
+                    })
+                }
+                else if (this.props.wallet.walletNetwork != process.env.NETWORK.toLowerCase()) {
+                    this.setState({
+                        text: "Wallet not in " + process.env.NETWORK + " mode!",
+                        status: "danger",
+                    })
+                } else {
+                    this.setState({
+                        text: "Wallet is connected",
+                        status: "success",
+                    })
+                }
+    
+            }).catch(err => {
+                console.log(err);
+                this.setState({
+                    text: "Something went wrong, click to try again",
+                    status: "danger",
+                })
+            })
+
+        }, 220);
+    }
+
+    render() {
+        return (
+            <div className="text-center">
+                <h3 className="mt-3">Wallet Connection:</h3>
+                <button 
+                    type="button" 
+                    className={"btn btn-" + this.state.status}
+                    onClick={this.handleClick}
+                >{this.state.text}</button>
             </div>
         )
     }
@@ -295,15 +373,6 @@ function rgb(color) {
 
 $(document).ready(function () {
     renderApp();
-
-    let element = <button id="connectBtn" className="btn btn-dark">Click to connect</button>
-    render(element, document.getElementById("connected-root"))
-
-    // Activate Cardano
-    activateCardano();
-    $("#connectBtn").click(function () {
-        enableCardano();
-    });
 
     $("#pageMain").bind("wheel mousewheel", function (e) { e.preventDefault() });
 });
