@@ -71,6 +71,7 @@ export class Canvas extends React.Component {
         super(props);
 
         this.drawing = false;
+        this.mouseDownTime = 0;
         this.pos = [];
 
         this.state = {
@@ -84,15 +85,20 @@ export class Canvas extends React.Component {
     }
 
     handleWheel = (e) => {
-        const scaleBy = 0.94;
+        const scaleBy = 0.86;
+        const maxScale = 1.0;
+        const minScale = 21.0;
+
         const stage = e.target.getStage();
         const oldScale = stage.scaleX();
+
         const mousePointTo = {
             x: stage.getPointerPosition().x / oldScale - stage.x() / oldScale,
             y: stage.getPointerPosition().y / oldScale - stage.y() / oldScale
         };
 
-        const newScale = e.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy;
+        let newScale = e.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy;
+        newScale = Math.min(Math.max(newScale, maxScale), minScale);
 
         this.setState({
             stageScale: newScale,
@@ -103,20 +109,25 @@ export class Canvas extends React.Component {
         this.state.newDataCallback({zoom: newScale});
     }
 
-    onClick = (e) => {
-        // New pixel placed
-        if (e.evt.button === 2) {
-            this.drawing = true;
-
+    onMouseDown = (e) => {
+        if (e.evt.button === 0) { // Left mouse click
+            this.mouseDownTime = Date.now();
+        }
+    }
+    
+    onMouseUp = (e) => {
+        if (e.evt.button === 0) { // Left mouse click
+            if ((Date.now() - this.mouseDownTime) > 100) { // It was not a click
+                return;
+            }
+            
             let shape = e.target;
             let pos = shape.getRelativePointerPosition();
 
             let key = `${Math.floor(pos.x)}${Math.floor(pos.y)}`;
 
-            if (!this.pos.includes(key)) {
-                this.state.newPixelCallback(pos);
-                this.pos.push(`${Math.floor(pos.x)}${Math.floor(pos.y)}`);
-            }
+            this.state.newPixelCallback(pos);
+            this.pos.push(`${Math.floor(pos.x)}${Math.floor(pos.y)}`);
         }
     }
 
@@ -125,25 +136,6 @@ export class Canvas extends React.Component {
         let pos = shape.getRelativePointerPosition();
 
         this.state.newDataCallback({pos: pos});
-        
-        if (!this.drawing) {
-            return;
-        }
-
-
-        let key = `${Math.floor(pos.x)}${Math.floor(pos.y)}`;
-
-        if (!this.pos.includes(key)) {
-            this.state.newPixelCallback(pos);
-            this.pos.push(`${Math.floor(pos.x)}${Math.floor(pos.y)}`);
-        }
-    }
-
-    onEnd = (e) => {
-        if (e.evt.button === 2) {
-            this.drawing = false;
-            this.pos = [];
-        }
     }
 
     render() {
@@ -163,15 +155,15 @@ export class Canvas extends React.Component {
                 <Layer imageSmoothingEnabled={false}>
                     <Group
                         draggable
-                        onMouseDown={this.onClick}
+                        onMouseDown={this.onMouseDown}
                         onMouseMove={this.onMove}
-                        onMouseUp={this.onEnd}
+                        onMouseUp={this.onMouseUp}
                     >
                         <Rect
                             stroke="black"
                             strokeWidth={1}
-                            width={1024}
-                            height={1024}
+                            width={256}
+                            height={256}
                             listening={false}
                         />
 

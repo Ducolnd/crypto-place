@@ -9,6 +9,8 @@ const { createCanvas } = require('canvas');
 const network = process.env.NETWORK;
 const metadataLabel = 982541024549416;
 const pixelCost = 0.1; // 0.1 ADA per pixel
+const canvasSize = 256;
+
 let canvasPath;
 let addr;
 let blockfrostKey;
@@ -151,9 +153,9 @@ function formatMetadata(data) {
 // Update canvas file with new pixels
 function updateCanvas(withPixels) {
     if (!fs.existsSync(canvasPath)) {
-        const canvas = createCanvas(1024, 1024);
+        const canvas = createCanvas(canvasSize, canvasSize);
         canvas.getContext("2d").fillStyle = "white"
-        canvas.getContext("2d").fillRect(0, 0, 1024, 1024);
+        canvas.getContext("2d").fillRect(0, 0, canvasSize, canvasSize);
 
         fs.writeFileSync(canvasPath, canvas.toBuffer("image/png"));
     }
