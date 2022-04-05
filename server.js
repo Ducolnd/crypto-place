@@ -1,5 +1,6 @@
 const express = require("express");
-var exphbs  = require('express-handlebars');
+const ws = require("ws");
+const exphbs = require('express-handlebars');
 
 const app = express()
 
@@ -9,10 +10,10 @@ app.set("view engine", "handlebars");
 app.use(express.static("static"));
 app.use(
     express.urlencoded({
-      extended: true
+        extended: true
     })
-  )
-  
+)
+
 app.use(express.json())
 
 const server = app.listen(7000, () => {
@@ -37,4 +38,70 @@ app.get('/wallet', (_, res) => {
 
 app.get('/faq', (_, res) => {
     res.render("faq")
-})
+});
+
+const wss = new ws.WebSocketServer({ server });
+let pixelPool = {};
+let buffered = [];
+
+wss.on("connection", (connection) => {
+
+    // On initial connection, send current pixel pool
+    if (Object.keys(pixelPool).length > 0) {
+        connection.send(JSON.stringify(
+            Array.from(
+                Object.values(pixelPool), x => (
+                    { status: "add", pixel: x }
+                ))
+        ));
+    }
+
+    // For every pixel received, broadcast it
+    connection.on("message", (data) => {
+        let incoming = JSON.parse(data.toString());
+
+        if (Array.isArray(incoming)) {
+
+            for (const current of incoming) {
+                if (current.status === "add") {
+                    pixelPool[`${current.pixel.x}${current.pixel.y}`] = current.pixel;
+                    // buffered.push({d: current, conn: connection});
+                    // broadcast(JSON.stringify(current), connection);
+                    
+                } else if (current.status === "del") {
+                    delete current[`${current.pixel.x}${current.pixel.y}`];
+                    // buffered.push({d: current, conn: connection});
+                    
+                } else {
+                    console.log("Wrong status");
+                    return;
+                }
+            }
+
+            broadcast(JSON.stringify(incoming), connection);
+        }
+    })
+});
+
+// setInterval(_ => {
+//     if (buffered.length > 0) {
+//         broadcast(JSON.stringify(buffered));
+//         buffered = [];
+//     }
+// }, 400);
+
+function broadcast(msg, connection) {
+    wss.clients.forEach(client => {
+        if (client !== connection && client.readyState === ws.WebSocket.OPEN) {
+            client.send(msg);
+        }
+    });
+}
+
+function broadcast(msg) {
+    wss.clients.forEach(client => {
+        if (client.readyState === ws.WebSocket.OPEN) {
+            client.send(msg);
+        }
+    });
+}

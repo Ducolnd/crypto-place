@@ -32,11 +32,58 @@ class App extends React.Component {
         this.state = {
             currentColor: [22, 23, 26],
             bufferedPixels: (storage === null) ? {} : storage,
+            unconfirmedPixels: {},
             retainPixels: [], // Keep on sho  wing submitted pixels for a while
             transaction: {},
             pos: {},
             zoom: 2,
             wallet: mainWallet,
+        }
+    }
+
+    componentDidMount() {
+        this.connectWebsocket();
+    }
+
+    connectWebsocket = () => {
+        this.socket  = new WebSocket("ws://" + window.location.host);
+        
+        this.socket.onopen = () => {
+            console.log("Opened Websocket connection")
+        }
+
+        this.socket.onmessage = (evt) => {
+            let data = JSON.parse(evt.data);
+            let temp = {...this.state.unconfirmedPixels};
+            
+            for (const current of data) {
+                const pixel = current.pixel;
+                const key = `${pixel.x}${pixel.y}`;
+                
+                if (current.status === "add") {
+                    temp[key] = pixel;
+                }
+                else if (current.status === "del") {
+                    delete temp[key];
+                }
+            }
+
+            this.setState({
+                unconfirmedPixels: temp,
+            })
+        }
+
+        this.socket.onclose = () => {
+            console.log("Closed Websocket connection, trying to reconnect...");
+
+            setTimeout(() => {
+                this.connectWebsocket();
+            }, 500)
+        }
+
+        this.socket.onerror = (err) => {
+            console.log("Websocket encountered an error: ", err.message, "Closing socket")
+            this.socket.close();
         }
     }
 
@@ -58,6 +105,7 @@ class App extends React.Component {
         }
 
         const key = `${Math.floor(pos.x)}${Math.floor(pos.y)}`; // Replace if already exists
+        let action = "add";
 
         if (key in this.state.bufferedPixels) {
             let p = this.state.bufferedPixels[key];
@@ -71,18 +119,23 @@ class App extends React.Component {
                     bufferedPixels: { ...n },
                 })
 
-            } else {
+                action = "del";
+
+            } 
+            else {
                 this.setState({
                     bufferedPixels: { ...this.state.bufferedPixels, [key]: pixel },
                 })
             }
 
-        } else {
+        } 
+        else {
             this.setState({
                 bufferedPixels: { ...this.state.bufferedPixels, [key]: pixel },
             })
         }
 
+        this.socket.send(JSON.stringify([{status: action,  pixel: pixel}]));
         this.updateStorage();
     }
 
@@ -160,11 +213,17 @@ class App extends React.Component {
     }
 
     removeAll = () => {
+        this.socket.send(
+            JSON.stringify(Array.from(
+                Object.values(this.state.bufferedPixels), x => (
+                    {status: "del", pixel: x}
+        ))));
+
+        this.removeStorage();
+        
         this.setState({
             bufferedPixels: {},
         })
-
-        this.removeStorage();
     }
 
     handleWallet = () => {
@@ -186,7 +245,7 @@ class App extends React.Component {
                             <div id="pageMain">
                                 <div id="cryptoContainer">
                                     <Canvas
-                                        pixels={[...this.state.retainPixels, ...Object.values(this.state.bufferedPixels)]}
+                                        pixels={[...this.state.retainPixels, ...Object.values(this.state.bufferedPixels), ...Object.values(this.state.unconfirmedPixels)]}
                                         newPixel={this.newPixel}
                                         newData={this.newData}
                                     />
